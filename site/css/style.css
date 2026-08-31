@@ -331,8 +331,32 @@ ul{list-style:none;}
 .marquee-section{background:var(--bg);border-bottom:1px solid var(--line);padding:28px 0;overflow:hidden;}
 .marquee-label{text-align:center;font-size:12.5px;color:var(--mist);margin-bottom:20px;letter-spacing:0.02em;}
 .marquee{position:relative;width:100%;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,black 8%,black 92%,transparent);mask-image:linear-gradient(90deg,transparent,black 8%,black 92%,transparent);}
-.marquee-track{display:flex;gap:14px;width:max-content;animation:marquee-scroll 34s linear infinite;}
+/* ambient aura — a blurred conic gradient that spins slowly behind the
+   strip via transform (compositor-only) while its own two-tone sweep
+   (sprout / sprout-deep) reads as a shifting light rather than a flat glow.
+   The mask on .marquee already fades it out at the same edges as the pills. */
+.marquee::before{
+  content:'';
+  position:absolute;z-index:0;top:50%;left:50%;
+  width:440px;height:440px;
+  transform:translate(-50%,-50%) rotate(0deg);
+  background:conic-gradient(from 0deg,
+    transparent 0%,
+    rgba(216,255,77,.55) 10%,
+    transparent 24%,
+    rgba(143,179,0,.45) 50%,
+    transparent 64%,
+    rgba(216,255,77,.4) 84%,
+    transparent 100%);
+  filter:blur(48px);
+  opacity:0;
+  pointer-events:none;
+  animation:marquee-aura-spin 22s linear infinite;
+  transition:opacity var(--motion-slow) var(--ease-in-out-quart);
+}
+.marquee-track{position:relative;z-index:1;display:flex;gap:14px;width:max-content;animation:marquee-scroll 34s linear infinite;}
 .marquee:hover .marquee-track{animation-play-state:paused;}
+@keyframes marquee-aura-spin{to{transform:translate(-50%,-50%) rotate(360deg);}}
 .pill{
   display:flex;align-items:center;gap:8px;
   background:var(--surface);border:1px solid var(--line);border-radius:999px;
@@ -347,27 +371,53 @@ ul{list-style:none;}
    -50% (one copy's width) with linear timing — no easing, no visible seam */
 @keyframes marquee-scroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
 
+:root[data-theme="dark"] .marquee::before{opacity:.75;}
 :root[data-theme="dark"] .pill{
   border-color:rgba(216,255,77,.16);
   box-shadow:0 0 0 1px rgba(216,255,77,.05) inset,0 0 16px -6px rgba(216,255,77,.4);
+  animation:pill-glow-pulse 3.8s var(--ease-in-out-quart) infinite;
 }
 :root[data-theme="dark"] .pill svg{fill:var(--sprout-deep);}
 :root[data-theme="dark"] .pill:hover{
   border-color:rgba(216,255,77,.4);
   box-shadow:0 0 0 1px rgba(216,255,77,.1) inset,0 0 22px -4px rgba(216,255,77,.55);
   transform:translateY(-1px);
+  animation:none;
+}
+/* stagger the breathing pulse across the strip so it reads as a slow
+   wave travelling through the pills rather than one flat synced blink */
+:root[data-theme="dark"] .pill:nth-child(2n){animation-delay:-.6s;}
+:root[data-theme="dark"] .pill:nth-child(3n){animation-delay:-1.2s;}
+:root[data-theme="dark"] .pill:nth-child(4n){animation-delay:-1.8s;}
+:root[data-theme="dark"] .pill:nth-child(5n){animation-delay:-2.4s;}
+:root[data-theme="dark"] .pill:nth-child(7n){animation-delay:-3.1s;}
+@keyframes pill-glow-pulse{
+  0%,100%{box-shadow:0 0 0 1px rgba(216,255,77,.05) inset,0 0 14px -6px rgba(216,255,77,.35);border-color:rgba(216,255,77,.16);}
+  50%{box-shadow:0 0 0 1px rgba(143,179,0,.1) inset,0 0 20px -4px rgba(143,179,0,.55);border-color:rgba(143,179,0,.4);}
 }
 @media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .marquee::before{opacity:.75;}
   :root:not([data-theme="light"]) .pill{
     border-color:rgba(216,255,77,.16);
     box-shadow:0 0 0 1px rgba(216,255,77,.05) inset,0 0 16px -6px rgba(216,255,77,.4);
+    animation:pill-glow-pulse 3.8s var(--ease-in-out-quart) infinite;
   }
   :root:not([data-theme="light"]) .pill svg{fill:var(--sprout-deep);}
   :root:not([data-theme="light"]) .pill:hover{
     border-color:rgba(216,255,77,.4);
     box-shadow:0 0 0 1px rgba(216,255,77,.1) inset,0 0 22px -4px rgba(216,255,77,.55);
     transform:translateY(-1px);
+    animation:none;
   }
+  :root:not([data-theme="light"]) .pill:nth-child(2n){animation-delay:-.6s;}
+  :root:not([data-theme="light"]) .pill:nth-child(3n){animation-delay:-1.2s;}
+  :root:not([data-theme="light"]) .pill:nth-child(4n){animation-delay:-1.8s;}
+  :root:not([data-theme="light"]) .pill:nth-child(5n){animation-delay:-2.4s;}
+  :root:not([data-theme="light"]) .pill:nth-child(7n){animation-delay:-3.1s;}
+}
+@media (prefers-reduced-motion:reduce){
+  .marquee::before{animation:none;}
+  .pill{animation:none !important;}
 }
 
 /* ---------- product showcase ---------- */
@@ -998,12 +1048,34 @@ input[type="range"]::-moz-range-thumb{
 /* ---------- footer ---------- */
 footer{padding:56px 0 40px;}
 .footer-inner{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:32px;}
-.footer-brand{display:flex;align-items:center;gap:8px;font-size:17px;}
-.footer-brand svg{width:18px;height:18px;fill:var(--bark);}
+.footer-brand{
+  display:flex;align-items:center;gap:8px;font-size:17px;
+  transition:color var(--motion-base) var(--ease-in-out-quart);
+}
+.footer-brand svg{
+  width:18px;height:18px;fill:var(--bark);
+  transition:
+    fill var(--motion-base) var(--ease-in-out-quart),
+    transform var(--motion-base) var(--ease-spring),
+    filter var(--motion-base) var(--ease-in-out-quart);
+}
+.footer-brand:hover svg{transform:scale(1.08) rotate(-4deg);}
 .footer-links{display:flex;gap:28px;flex-wrap:wrap;}
-.footer-links a{font-size:13.5px;color:var(--mist);}
+.footer-links a{
+  font-size:13.5px;color:var(--mist);
+  transition:color var(--motion-base) var(--ease-in-out-quart), text-shadow var(--motion-base) var(--ease-in-out-quart);
+}
 .footer-links a:hover{color:var(--bark);}
 .footer-legal{margin-top:40px;padding-top:24px;border-top:1px solid var(--line);font-size:12px;color:var(--mist);line-height:1.7;}
+
+:root[data-theme="dark"] .footer-brand:hover{color:var(--sprout);}
+:root[data-theme="dark"] .footer-brand:hover svg{fill:var(--sprout);filter:drop-shadow(0 0 10px rgba(216,255,77,.5));}
+:root[data-theme="dark"] .footer-links a:hover{color:var(--sprout);text-shadow:0 0 16px rgba(216,255,77,.35);}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .footer-brand:hover{color:var(--sprout);}
+  :root:not([data-theme="light"]) .footer-brand:hover svg{fill:var(--sprout);filter:drop-shadow(0 0 10px rgba(216,255,77,.5));}
+  :root:not([data-theme="light"]) .footer-links a:hover{color:var(--sprout);text-shadow:0 0 16px rgba(216,255,77,.35);}
+}
 
 /* ---------- misc ---------- */
 .section-alt{background:var(--paper-dim);}
