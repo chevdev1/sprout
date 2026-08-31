@@ -317,20 +317,29 @@ ul{list-style:none;}
 }
 .grow-sub{font-size:13.5px;color:var(--mist-on-ink);}
 .grow-ticker-line{height:1px;background:var(--line-on-ink);}
+/* Fixed-height "vertical marquee" — exactly 3 row-slots, always. Rows are
+   position:absolute and placed by JS via translateY(index * ROW_STEP);
+   overflow:hidden clips a 4th/departing row instead of growing the box,
+   which is what caused the whole panel (and the card next to it) to
+   reflow by a few pixels whenever a 4th transaction briefly existed. */
 .grow-feed{
-  display:flex;flex-direction:column;gap:10px;font-size:13px;min-height:96px;
+  position:relative;
+  height:104px; /* 3 * 28px rows + 2 * 10px gaps between them */
+  font-size:13px;
+  overflow:hidden;
   transition:opacity var(--motion-base) var(--ease-in-out-quart);
 }
 .grow-feed.is-resetting{opacity:0;}
 .grow-feed .item{
-  display:flex;justify-content:space-between;color:var(--mist-on-ink);
-  transform:translateY(0);opacity:1;
+  position:absolute;top:0;left:0;right:0;height:28px;
+  display:flex;align-items:center;justify-content:space-between;
+  color:var(--mist-on-ink);opacity:1;
   transition:
     transform var(--motion-base) var(--ease-out-expo),
     opacity var(--motion-base) var(--ease-out-expo);
 }
-.grow-feed .item.is-entering{transform:translateY(10px);opacity:0;}
-.grow-feed .item.is-leaving{transform:translateY(-6px);opacity:0;}
+.grow-feed .item.is-entering,
+.grow-feed .item.is-leaving{opacity:0;}
 .grow-feed .item b{color:var(--paper);font-weight:500;}
 .grow-feed .item .plus{color:var(--sprout);text-shadow:0 0 12px rgba(216,255,77,.55);}
 .hero-demo-status{
@@ -371,7 +380,6 @@ ul{list-style:none;}
 @media (prefers-reduced-motion:reduce){
   .mini-card,.mini-card.is-tapped,.hero-demo-pulse,.grow-amount.is-updated{animation:none;}
   .grow-feed .item{transition:opacity var(--motion-instant) linear;}
-  .grow-feed .item.is-entering,.grow-feed .item.is-leaving{transform:none;}
 }
 .mini-card .top{display:flex;justify-content:space-between;align-items:flex-start;}
 .mini-card .lockup{display:flex;align-items:center;gap:6px;}

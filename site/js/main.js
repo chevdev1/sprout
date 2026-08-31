@@ -348,6 +348,7 @@
   var growTotal = 0;
   var GROW_RATE = 0.015;
   var MAX_FEED_ROWS = 3;
+  var ROW_STEP = 38; // row height (28px) + gap (10px) — keep in sync with .grow-feed's fixed height in CSS
   var TICK_MS = 2200;
   var demoIndex = 0;
   var demoTimer = null;
@@ -367,22 +368,38 @@
     }, 640);
   }
 
+  // Re-stacks every row to its slot (translateY = index * ROW_STEP). Rows
+  // past MAX_FEED_ROWS sit below the fixed-height, overflow:hidden feed —
+  // they're faded out and removed rather than ever changing the box height.
+  function layoutFeedRows() {
+    var rows = growFeedEl.children;
+    for (var i = 0; i < rows.length; i++) {
+      var row = rows[i];
+      row.style.transform = 'translateY(' + (i * ROW_STEP) + 'px)';
+      if (i >= MAX_FEED_ROWS && !row.classList.contains('is-leaving')) {
+        row.classList.add('is-leaving');
+        (function (el) {
+          window.setTimeout(function () {
+            if (el.parentNode) el.parentNode.removeChild(el);
+          }, 480);
+        })(row);
+      }
+    }
+  }
+
   function addFeedRow(merchant, grown) {
     if (!growFeedEl) return;
     var row = document.createElement('div');
     row.className = 'item is-entering';
     row.innerHTML = '<span>' + merchant.name + '</span><b><span class="plus">+' + fmt(grown) + '</span></b>';
+    row.style.transform = 'translateY(-' + ROW_STEP + 'px)'; // starts one slot above the visible top
     growFeedEl.insertBefore(row, growFeedEl.firstChild);
-    // force layout before removing is-entering so the slide-up/fade-in transition actually plays
+    // force layout before the next frame so the entrance transition actually plays
     void row.offsetWidth;
-    row.classList.remove('is-entering');
-
-    var rows = growFeedEl.querySelectorAll('.item');
-    if (rows.length > MAX_FEED_ROWS) {
-      var oldest = rows[rows.length - 1];
-      oldest.classList.add('is-leaving');
-      window.setTimeout(function () { oldest.remove(); }, 460);
-    }
+    window.requestAnimationFrame(function () {
+      row.classList.remove('is-entering');
+      layoutFeedRows();
+    });
   }
 
   function resetDemo() {
