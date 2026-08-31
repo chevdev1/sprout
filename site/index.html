@@ -69,17 +69,16 @@
         <div class="row">
           <div>
             <div class="grow-label">Grow-back from this demo</div>
-            <div class="grow-amount" id="growAmount">$0.00</div>
+            <div class="grow-amount" id="growAmount" aria-live="polite">$0.00</div>
             <div class="grow-sub"><b style="color:var(--paper)">AAPL</b> · illustrative preview</div>
           </div>
         </div>
         <div class="grow-ticker-line"></div>
-        <div class="grow-feed" id="growFeed"></div>
-        <button class="hero-demo" id="heroDemo" type="button">
+        <div class="grow-feed" id="growFeed" aria-live="polite"></div>
+        <div class="hero-demo-status" aria-hidden="true">
           <span class="hero-demo-pulse"></span>
-          <span>Simulate a purchase</span>
-          <span class="hero-demo-arrow" aria-hidden="true">↗</span>
-        </button>
+          <span>Live demo · auto-updating</span>
+        </div>
       </div>
       <div class="mini-card">
         <div class="top">

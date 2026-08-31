@@ -332,10 +332,9 @@
     });
   });
 
-  /* ---------- hero purchase demo ---------- */
+  /* ---------- hero purchase demo (auto-loop) ---------- */
   var growAmountEl = document.getElementById('growAmount');
   var growFeedEl = document.getElementById('growFeed');
-  var heroDemo = document.getElementById('heroDemo');
   var miniCard = document.querySelector('.mini-card');
   var merchants = [
     { name: 'Blue Bottle Coffee', spend: 6.50 },
@@ -348,48 +347,89 @@
   ];
   var growTotal = 0;
   var GROW_RATE = 0.015;
-  var feedItems = [];
+  var MAX_FEED_ROWS = 3;
+  var TICK_MS = 2200;
   var demoIndex = 0;
+  var demoTimer = null;
 
   function fmt(n) {
     return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
 
-  function tick(merchant) {
-    var m = merchant || merchants[Math.floor(Math.random() * merchants.length)];
-    var grown = +(m.spend * GROW_RATE).toFixed(2);
+  function flashCard() {
+    if (!miniCard) return;
+    miniCard.classList.remove('is-tapped');
+    void miniCard.offsetWidth;
+    miniCard.classList.add('is-tapped');
+    window.clearTimeout(miniCard.tapReset);
+    miniCard.tapReset = window.setTimeout(function () {
+      miniCard.classList.remove('is-tapped');
+    }, 640);
+  }
+
+  function addFeedRow(merchant, grown) {
+    if (!growFeedEl) return;
+    var row = document.createElement('div');
+    row.className = 'item is-entering';
+    row.innerHTML = '<span>' + merchant.name + '</span><b><span class="plus">+' + fmt(grown) + '</span></b>';
+    growFeedEl.insertBefore(row, growFeedEl.firstChild);
+    // force layout before removing is-entering so the slide-up/fade-in transition actually plays
+    void row.offsetWidth;
+    row.classList.remove('is-entering');
+
+    var rows = growFeedEl.querySelectorAll('.item');
+    if (rows.length > MAX_FEED_ROWS) {
+      var oldest = rows[rows.length - 1];
+      oldest.classList.add('is-leaving');
+      window.setTimeout(function () { oldest.remove(); }, 460);
+    }
+  }
+
+  function resetDemo() {
+    if (!growFeedEl) {
+      growTotal = 0;
+      return;
+    }
+    growFeedEl.classList.add('is-resetting');
+    window.setTimeout(function () {
+      growFeedEl.innerHTML = '';
+      growTotal = 0;
+      if (growAmountEl) growAmountEl.textContent = fmt(0);
+      growFeedEl.classList.remove('is-resetting');
+    }, 420);
+  }
+
+  function tick() {
+    var merchant = merchants[demoIndex % merchants.length];
+    demoIndex += 1;
+    var lapComplete = demoIndex % merchants.length === 0;
+    var grown = +(merchant.spend * GROW_RATE).toFixed(2);
     growTotal += grown;
+
     if (growAmountEl) {
       growAmountEl.textContent = fmt(growTotal);
       growAmountEl.classList.remove('is-updated');
       void growAmountEl.offsetWidth;
       growAmountEl.classList.add('is-updated');
     }
-    if (miniCard) {
-      miniCard.classList.remove('is-tapped');
-      void miniCard.offsetWidth;
-      miniCard.classList.add('is-tapped');
-    }
+    flashCard();
+    addFeedRow(merchant, grown);
 
-    feedItems.unshift({ name: m.name, grown: grown });
-    feedItems = feedItems.slice(0, 3);
-
-    if (growFeedEl) {
-      growFeedEl.innerHTML = feedItems.map(function (it) {
-        return '<div class="item"><span>' + it.name + '</span><b><span class="plus">+' + fmt(it.grown) + '</span></b></div>';
-      }).join('');
+    if (lapComplete) {
+      window.setTimeout(resetDemo, TICK_MS * 0.55);
     }
   }
-  if (heroDemo) {
-    heroDemo.addEventListener('click', function () {
-      var merchant = merchants[demoIndex % merchants.length];
-      demoIndex += 1;
-      tick(merchant);
-      heroDemo.querySelector('span:nth-child(2)').textContent = merchant.name + ' added · +' + fmt(merchant.spend * GROW_RATE);
-      window.clearTimeout(heroDemo.demoReset);
-      heroDemo.demoReset = window.setTimeout(function () {
-        heroDemo.querySelector('span:nth-child(2)').textContent = 'Simulate a purchase';
-      }, 2200);
+
+  if (growAmountEl && growFeedEl) {
+    tick();
+    demoTimer = window.setInterval(tick, TICK_MS);
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) {
+        window.clearInterval(demoTimer);
+      } else {
+        window.clearInterval(demoTimer);
+        demoTimer = window.setInterval(tick, TICK_MS);
+      }
     });
   }
 
