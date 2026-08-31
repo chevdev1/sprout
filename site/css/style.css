@@ -1209,6 +1209,49 @@ footer{padding:56px 0 40px;}
 .showcase-section .card-activity-list strong{color:var(--sprout-deep)!important;}
 .showcase-card-slide .product-card-grow ~ .card-slide-foot{display:none;}
 .showcase-card-slide .product-card-grow ~ .card-activity-list{margin-bottom:38px;}
+
+/* ---------- full-screen click-through showcase ---------- */
+.showcase-section>.wrap{max-width:none;padding:0;}
+.showcase-section .showcase-intro{max-width:1160px;margin-right:auto;margin-left:auto;padding-right:24px;padding-left:24px;}
+.showcase-section .showcase-stage{width:100vw;min-height:min(760px,calc(100svh - 86px));margin-left:calc(50% - 50vw);overflow:hidden;}
+.showcase-section .showcase-stage::after{display:none;}
+.showcase-section .showcase-card-deck{width:min(100%,980px);height:min(720px,calc(100svh - 120px));margin:0 auto;}
+.showcase-section .showcase-card-slide{inset:0;}
+.showcase-section .showcase-card-slide.is-prev,
+.showcase-section .showcase-card-slide.is-next{visibility:hidden;opacity:0!important;pointer-events:none;}
+.showcase-section .showcase-card-slide.active{visibility:visible;opacity:1!important;}
+.showcase-section .showcase-card-slide.active .product-card-image{width:min(72vw,680px);margin-top:68px;}
+.showcase-section .showcase-card-slide.active .card-slide-info,
+.showcase-section .showcase-card-slide.active .card-detail-list,
+.showcase-section .showcase-card-slide.active .card-grow-summary,
+.showcase-section .showcase-card-slide.active .card-grow-chart,
+.showcase-section .showcase-card-slide.active .card-activity-list{width:min(72vw,680px);}
+.showcase-section .showcase-zone{z-index:9;width:50%;padding:0;opacity:0;background:transparent!important;color:transparent;}
+.showcase-section .showcase-zone:hover{opacity:0;background:transparent!important;}
+.showcase-section .showcase-zone:focus-visible{outline:2px solid var(--sprout-deep);outline-offset:-8px;}
+.showcase-section .showcase-zone-prev{left:0;}
+.showcase-section .showcase-zone-next{right:0;}
+@media (max-width:860px){
+  .showcase-section .showcase-intro{padding-right:20px;padding-left:20px;}
+  .showcase-section .showcase-stage{min-height:calc(100svh - 72px);}
+  .showcase-section .showcase-card-deck{height:calc(100svh - 112px);}
+  .showcase-section .showcase-card-slide.active .product-card-image{width:min(82vw,560px);margin-top:58px;}
+  .showcase-section .showcase-card-slide.active .card-slide-info,
+  .showcase-section .showcase-card-slide.active .card-detail-list,
+  .showcase-section .showcase-card-slide.active .card-grow-summary,
+  .showcase-section .showcase-card-slide.active .card-grow-chart,
+  .showcase-section .showcase-card-slide.active .card-activity-list{width:min(82vw,560px);}
+}
+@media (max-width:560px){
+  .showcase-section .showcase-stage{min-height:650px;}
+  .showcase-section .showcase-card-deck{height:610px;}
+  .showcase-section .showcase-card-slide.active .product-card-image{width:90vw;margin-top:44px;}
+  .showcase-section .showcase-card-slide.active .card-slide-info,
+  .showcase-section .showcase-card-slide.active .card-detail-list,
+  .showcase-section .showcase-card-slide.active .card-grow-summary,
+  .showcase-section .showcase-card-slide.active .card-grow-chart,
+  .showcase-section .showcase-card-slide.active .card-activity-list{width:90vw;}
+}
 .showcase-card-slide.active.is-entering-next{transform:translateX(69%) scale(.69) rotate(9deg);}
 .showcase-card-slide.active.is-entering-prev{transform:translateX(-69%) scale(.69) rotate(-9deg);}
 
