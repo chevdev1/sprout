@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sprout — brand concept</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Instrument+Sans:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0D110C;
+    --ink-2:#171B14;
+    --paper:#F6F5EF;
+    --bark:#1C1D18;
+    --mist:#6E6E64;
+    --mist-on-ink:#9A9C8E;
+    --sprout:#D8FF4D;
+    --sprout-deep:#8FB300;
+    --line:#E4E2D6;
+    --line-on-ink:rgba(255,255,255,0.10);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--bark);
+    font-family:'Inter',-apple-system,sans-serif;
+    padding:48px 20px 80px;
+  }
+  .wrap{max-width:680px;margin:0 auto;}
+  .display{font-family:'Instrument Sans','Inter',sans-serif;font-weight:600;}
+  h1{font-size:40px;letter-spacing:-0.02em;}
+  .tagline{font-size:15px;color:var(--mist);margin-top:8px;max-width:38ch;line-height:1.5;}
+  section{margin-top:56px;}
+  .label{font-size:12px;color:var(--mist);margin-bottom:14px;line-height:1.5;max-width:44ch;}
+
+  /* palette */
+  .palette{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;}
+  .swatch{border-radius:10px;overflow:hidden;border:1px solid var(--line);}
+  .swatch .fill{height:64px;}
+  .swatch .meta{padding:8px 10px;background:#fff;}
+  .swatch .meta .name{font-size:12px;font-weight:500;}
+  .swatch .meta .hex{font-size:11px;color:var(--mist);font-family:monospace;}
+
+  /* logo mark */
+  .mark-row{display:flex;gap:12px;}
+  .mark-tile{flex:1;border-radius:14px;display:flex;align-items:center;justify-content:center;height:150px;}
+  .mark-tile.on-ink{background:var(--ink);}
+  .mark-tile.on-paper{background:#fff;border:1px solid var(--line);}
+  .mark-tile svg{width:56px;height:56px;}
+
+  .scale-row{display:flex;align-items:center;gap:18px;margin-top:14px;padding:18px;background:var(--ink);border-radius:14px;}
+  .scale-item{display:flex;flex-direction:column;align-items:center;gap:8px;}
+  .scale-item span{font-size:10px;color:var(--mist-on-ink);font-family:monospace;}
+  .chip{border-radius:50%;background:var(--sprout);display:flex;align-items:center;justify-content:center;}
+  .chip svg{fill:var(--ink);}
+
+  /* wordmark */
+  .wordmark{font-family:'Instrument Sans',sans-serif;font-weight:600;font-size:22px;letter-spacing:-0.01em;}
+
+  /* X profile mockup */
+  .x-card{border-radius:16px;overflow:hidden;background:var(--ink);border:1px solid var(--line-on-ink);}
+  .x-banner{position:relative;width:100%;aspect-ratio:3/1;background:linear-gradient(155deg,#131711 0%,#0D110C 60%);overflow:hidden;}
+  .x-banner .ghost{position:absolute;right:-6%;top:-24%;width:60%;opacity:0.08;}
+  .x-banner .ghost svg{width:100%;height:100%;fill:var(--sprout);}
+  .x-banner .lockup{position:absolute;left:24px;top:22px;display:flex;align-items:center;gap:8px;}
+  .x-banner .lockup svg{width:22px;height:22px;fill:var(--sprout);}
+  .x-banner .lockup span{font-family:'Instrument Sans',sans-serif;font-weight:600;font-size:16px;color:var(--paper);}
+  .x-banner .claim{position:absolute;left:24px;bottom:20px;font-size:13px;color:var(--mist-on-ink);}
+  .x-banner .claim b{color:var(--paper);font-weight:500;}
+
+  .x-body{padding:0 20px 20px;}
+  .x-avatar{width:88px;height:88px;border-radius:50%;background:var(--sprout);border:4px solid var(--ink);margin-top:-44px;display:flex;align-items:center;justify-content:center;}
+  .x-avatar svg{width:38px;height:38px;fill:var(--ink);}
+  .x-name{color:var(--paper);font-size:19px;font-weight:600;margin-top:12px;}
+  .x-handle{color:var(--mist-on-ink);font-size:14px;margin-top:2px;}
+  .x-bio{color:#D6D6C8;font-size:14px;line-height:1.5;margin-top:12px;max-width:46ch;}
+  .x-meta{color:var(--mist-on-ink);font-size:13px;margin-top:12px;}
+  .x-stats{display:flex;gap:18px;margin-top:12px;font-size:13px;color:var(--mist-on-ink);}
+  .x-stats b{color:var(--paper);font-weight:600;}
+
+  /* card mockup */
+  .pay-card{
+    width:100%;max-width:360px;aspect-ratio:1.586/1;border-radius:18px;
+    background:linear-gradient(135deg,#171B14 0%,#0D110C 70%);
+    padding:22px 24px;display:flex;flex-direction:column;justify-content:space-between;
+    border:1px solid var(--line-on-ink);
+  }
+  .pay-card .top{display:flex;justify-content:space-between;align-items:flex-start;}
+  .pay-card .top .lockup{display:flex;align-items:center;gap:6px;}
+  .pay-card .top .lockup svg{width:16px;height:16px;fill:var(--sprout);}
+  .pay-card .top .lockup span{color:var(--paper);font-family:'Instrument Sans',sans-serif;font-weight:600;font-size:14px;}
+  .pay-card .chain-tag{font-size:10px;color:var(--mist-on-ink);border:1px solid var(--line-on-ink);border-radius:20px;padding:3px 8px;}
+  .pay-card .num{color:#E4E4D8;font-size:16px;letter-spacing:2px;font-family:monospace;}
+  .pay-card .bottom{display:flex;justify-content:space-between;align-items:flex-end;}
+  .pay-card .assets{font-size:10px;color:var(--mist-on-ink);letter-spacing:0.5px;}
+
+  @media (max-width:480px){
+    .palette{grid-template-columns:repeat(3,1fr);}
+    h1{font-size:32px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1 class="display">sprout</h1>
+  <p class="tagline">Тратишь крипту и токенизированные акции на Robinhood Chain — получаешь долю рынка обратно с каждой покупки. «Spend today. Own tomorrow.»</p>
+
+  <section>
+    <p class="label">Палитра — построена вокруг фирменного неона Robinhood Chain, но со своим оттенком (чуть теплее, «sprout», а не чистый Robin Neon), плюс тёплый чёрный с зелёным подтоном вместо нейтрального.</p>
+    <div class="palette">
+      <div class="swatch">
+        <div class="fill" style="background:var(--ink)"></div>
+        <div class="meta"><div class="name">Ink</div><div class="hex">#0D110C</div></div>
+      </div>
+      <div class="swatch">
+        <div class="fill" style="background:var(--sprout)"></div>
+        <div class="meta"><div class="name">Sprout</div><div class="hex">#D8FF4D</div></div>
+      </div>
+      <div class="swatch">
+        <div class="fill" style="background:var(--paper)"></div>
+        <div class="meta"><div class="name">Paper</div><div class="hex">#F6F5EF</div></div>
+      </div>
+      <div class="swatch">
+        <div class="fill" style="background:var(--bark)"></div>
+        <div class="meta"><div class="name">Bark</div><div class="hex">#1C1D18</div></div>
+      </div>
+      <div class="swatch">
+        <div class="fill" style="background:var(--mist)"></div>
+        <div class="meta"><div class="name">Mist</div><div class="hex">#6E6E64</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="label">Знак — стилизованный росток: два листа, встречающихся в точке роста. Читается и как растение, и как галочка/стрелка вверх — рост портфеля. Работает моноцветом на любом фоне.</p>
+    <div class="mark-row">
+      <div class="mark-tile on-ink">
+        <svg viewBox="0 0 100 100"><path fill="var(--sprout)" d="M50 88 C22 84 8 46 30 14 C40 36 46 62 50 88 Z M50 88 C78 84 92 46 70 14 C60 36 54 62 50 88 Z"/><circle cx="50" cy="90" r="5" fill="var(--sprout)"/></svg>
+      </div>
+      <div class="mark-tile on-paper">
+        <svg viewBox="0 0 100 100"><path fill="var(--ink)" d="M50 88 C22 84 8 46 30 14 C40 36 46 62 50 88 Z M50 88 C78 84 92 46 70 14 C60 36 54 62 50 88 Z"/><circle cx="50" cy="90" r="5" fill="var(--ink)"/></svg>
+      </div>
+    </div>
+    <div class="scale-row">
+      <div class="scale-item">
+        <div class="chip" style="width:48px;height:48px;"><svg viewBox="0 0 100 100" width="24" height="24"><path d="M50 88 C22 84 8 46 30 14 C40 36 46 62 50 88 Z M50 88 C78 84 92 46 70 14 C60 36 54 62 50 88 Z"/><circle cx="50" cy="90" r="5"/></svg></div>
+        <span>48px</span>
+      </div>
+      <div class="scale-item">
+        <div class="chip" style="width:32px;height:32px;"><svg viewBox="0 0 100 100" width="16" height="16"><path d="M50 88 C22 84 8 46 30 14 C40 36 46 62 50 88 Z M50 88 C78 84 92 46 70 14 C60 36 54 62 50 88 Z"/><circle cx="50" cy="90" r="5"/></svg></div>
+        <span>32px</span>
+      </div>
+      <div class="scale-item">
+        <div class="chip" style="width:24px;height:24px;"><svg viewBox="0 0 100 100" width="12" height="12"><path d="M50 88 C22 84 8 46 30 14 C40 36 46 62 50 88 Z M50 88 C78 84 92 46 70 14 C60 36 54 62 50 88 Z"/><circle cx="50" cy="90" r="5"/></svg></div>
+        <span>24px</span>
+      </div>
+      <div class="scale-item">
+        <div class="chip" style="width:16px;height:16px;"><svg viewBox="0 0 100 100" width="9" height="9"><path d="M50 88 C22 84 8 46 30 14 C40 36 46 62 50 88 Z M50 88 C78 84 92 46 70 14 C60 36 54 62 50 88 Z"/><circle cx="50" cy="90" r="5"/></svg></div>
+        <span>16px</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="label">Аватар + баннер X — как это увидят в профиле.</p>
+    <div class="x-card">
+      <div class="x-banner">
+        <div class="ghost"><svg viewBox="0 0 100 100"><path d="M50 88 C22 84 8 46 30 14 C40 36 46 62 50 88 Z M50 88 C78 84 92 46 70 14 C60 36 54 62 50 88 Z"/></svg></div>
+        <div class="lockup"><svg viewBox="0 0 100 100"><path d="M50 88 C22 84 8 46 30 14 C40 36 46 62 50 88 Z M50 88 C78 84 92 46 70 14 C60 36 54 62 50 88 Z"/></svg><span>sprout</span></div>
+        <div class="claim">Every purchase <b>plants a share</b> back into your portfolio</div>
+      </div>
+      <div class="x-body">
+        <div class="x-avatar"><svg viewBox="0 0 100 100"><path d="M50 88 C22 84 8 46 30 14 C40 36 46 62 50 88 Z M50 88 C78 84 92 46 70 14 C60 36 54 62 50 88 Z"/></svg></div>
+        <div class="x-name">Sprout</div>
+        <div class="x-handle">@sproutcash</div>
+        <div class="x-bio">Spend crypto and tokenized stocks on Robinhood Chain — get a slice of the market back on everything you buy.</div>
+        <div class="x-meta">sprout.cash · Robinhood Chain · Joined Sep 2026</div>
+        <div class="x-stats"><span><b>1,204</b> Following</span><span><b>18.6K</b> Followers</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="label">Карта — визуальный язык платёжной карты, если делать физическую/виртуальную карту как у конкурента.</p>
+    <div class="pay-card">
+      <div class="top">
+        <div class="lockup"><svg viewBox="0 0 100 100"><path d="M50 88 C22 84 8 46 30 14 C40 36 46 62 50 88 Z M50 88 C78 84 92 46 70 14 C60 36 54 62 50 88 Z"/></svg><span>sprout</span></div>
+        <div class="chain-tag">Robinhood Chain</div>
+      </div>
+      <div class="num">•••• •••• •••• 7241</div>
+      <div class="bottom">
+        <div class="assets">ETH · USDG · STOCKS</div>
+        <div class="assets">VIRTUAL</div>
+      </div>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>
