@@ -362,6 +362,13 @@ ul{list-style:none;}
   30%{transform:perspective(700px) translateY(-10px) rotateX(6deg) rotateY(-4deg) scale(1.025);box-shadow:0 20px 42px -10px rgba(216,255,77,.5);border-color:rgba(216,255,77,.55);}
   100%{transform:perspective(700px) translateY(0) rotateX(0) rotateY(0) scale(1);box-shadow:0 0 0 0 rgba(216,255,77,0);border-color:var(--line-on-ink);}
 }
+/* reduced-motion still gets a reaction on every purchase — just the glow,
+   no translate/rotate/scale, since that parallax-y motion is exactly what
+   prefers-reduced-motion exists to suppress */
+@keyframes card-tap-reduced{
+  0%,100%{box-shadow:0 0 0 0 rgba(216,255,77,0);border-color:var(--line-on-ink);}
+  40%{box-shadow:0 0 34px -6px rgba(216,255,77,.55);border-color:rgba(216,255,77,.55);}
+}
 
 .mini-card{
   position:relative;
@@ -378,7 +385,9 @@ ul{list-style:none;}
   transition:border-color var(--motion-base) var(--ease-in-out-quart);
 }
 @media (prefers-reduced-motion:reduce){
-  .mini-card,.mini-card.is-tapped,.hero-demo-pulse,.grow-amount.is-updated{animation:none;}
+  .mini-card{animation:none;} /* idle float is pure ambient motion — safe to drop entirely */
+  .mini-card.is-tapped{animation:card-tap-reduced .5s ease-in-out;}
+  .hero-demo-pulse,.grow-amount.is-updated{animation:none;}
   .grow-feed .item{transition:opacity var(--motion-instant) linear;}
 }
 .mini-card .top{display:flex;justify-content:space-between;align-items:flex-start;}
