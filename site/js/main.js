@@ -199,15 +199,22 @@
   var howVisual = document.getElementById('howVisual');
   var howStageLabel = document.getElementById('howStageLabel');
   var howSteps = document.querySelectorAll('[data-how-step]');
+  var howStepsContainer = document.getElementById('howSteps');
   var howStageNames = ['01 / FUND', '02 / SPEND', '03 / GROW-BACK', '04 / TRACK'];
+  var howCurrentStage = 0;
 
   function setHowStage(index) {
-    if (!howVisual || !howSteps.length) return;
+    if (!howVisual || !howSteps.length || index === howCurrentStage) return;
     howVisual.dataset.stage = index;
+    howCurrentStage = index;
     if (howStageLabel) howStageLabel.textContent = howStageNames[index];
     howSteps.forEach(function (step, stepIndex) {
       step.classList.toggle('is-active', stepIndex === index);
     });
+    if (howStepsContainer) {
+      var progress = index / (howSteps.length - 1);
+      howStepsContainer.style.setProperty('--how-progress', progress);
+    }
   }
 
   howSteps.forEach(function (step) {
