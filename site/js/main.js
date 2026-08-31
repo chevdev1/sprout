@@ -1,6 +1,84 @@
 (function () {
   'use strict';
 
+  /* ---------- night mode ---------- */
+  var themeToggle = document.getElementById('themeToggle');
+  var root = document.documentElement;
+  var prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+  var reduceMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var THEME_TRANSITION_MS = 760;
+
+  function currentTheme() {
+    return root.dataset.theme === 'dark' || (!root.dataset.theme && prefersDark.matches) ? 'dark' : 'light';
+  }
+
+  function reflectTheme(theme) {
+    if (themeToggle) {
+      themeToggle.setAttribute('aria-pressed', String(theme === 'dark'));
+      themeToggle.setAttribute('aria-label', theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+    }
+  }
+  reflectTheme(currentTheme());
+
+  function applyTheme(theme) {
+    root.dataset.theme = theme;
+    try { localStorage.setItem('sprout-theme', theme); } catch (e) {}
+    reflectTheme(theme);
+  }
+
+  function crossfadeThemeChange(next) {
+    root.classList.add('theme-transition');
+    window.setTimeout(function () {
+      root.classList.remove('theme-transition');
+    }, THEME_TRANSITION_MS);
+    applyTheme(next);
+  }
+
+  function handleThemeToggle(event) {
+    var next = currentTheme() === 'dark' ? 'light' : 'dark';
+
+    if (reduceMotionQuery.matches || typeof document.startViewTransition !== 'function') {
+      crossfadeThemeChange(next);
+      return;
+    }
+
+    var x = event.clientX || (themeToggle.getBoundingClientRect().left + 20);
+    var y = event.clientY || (themeToggle.getBoundingClientRect().top + 20);
+    var endRadius = Math.hypot(
+      Math.max(x, window.innerWidth - x),
+      Math.max(y, window.innerHeight - y)
+    );
+
+    var transition = document.startViewTransition(function () {
+      applyTheme(next);
+    });
+
+    transition.ready.then(function () {
+      root.animate(
+        {
+          clipPath: [
+            'circle(0px at ' + x + 'px ' + y + 'px)',
+            'circle(' + endRadius + 'px at ' + x + 'px ' + y + 'px)'
+          ]
+        },
+        {
+          duration: 650,
+          easing: 'cubic-bezier(.32,1.4,.44,1)',
+          pseudoElement: '::view-transition-new(root)'
+        }
+      );
+    });
+  }
+
+  if (themeToggle) {
+    themeToggle.addEventListener('click', handleThemeToggle);
+  }
+  if (prefersDark.addEventListener) {
+    prefersDark.addEventListener('change', function () {
+      if (!root.dataset.theme) reflectTheme(currentTheme());
+    });
+  }
+
   /* ---------- nav scroll state ---------- */
   var nav = document.getElementById('nav');
   function onScroll() {
