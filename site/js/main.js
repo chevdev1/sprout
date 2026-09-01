@@ -571,4 +571,63 @@
       if (item.classList.contains('open')) setHeight();
     });
   });
+
+  /* ---------- quick-nav dock ---------- */
+  var dock = document.getElementById('dock');
+  var dockItems = dock ? Array.prototype.slice.call(dock.querySelectorAll('.dock-item')) : [];
+  var dockReduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (dock && dockItems.length) {
+    var dockSections = dockItems
+      .map(function (item) { return document.getElementById(item.dataset.target); })
+      .filter(Boolean);
+
+    // macOS-dock magnification: each icon scales by proximity to the
+    // cursor's x position, springing back to rest on mouseleave.
+    function magnifyDock(mouseX) {
+      dockItems.forEach(function (item) {
+        var rect = item.getBoundingClientRect();
+        var distance = Math.abs(mouseX - (rect.left + rect.width / 2));
+        var proximity = Math.max(0, 1 - distance / 110);
+        var scale = 1 + proximity * 0.4;
+        var lift = proximity * 9;
+        item.style.transform = 'translateY(-' + lift.toFixed(1) + 'px) scale(' + scale.toFixed(3) + ')';
+      });
+    }
+    function resetDockMagnify() {
+      dockItems.forEach(function (item) { item.style.transform = ''; });
+    }
+    if (!dockReduceMotion) {
+      dock.addEventListener('mousemove', function (e) { magnifyDock(e.clientX); });
+      dock.addEventListener('mouseleave', resetDockMagnify);
+    }
+
+    dockItems.forEach(function (item) {
+      item.addEventListener('click', function () {
+        var target = document.getElementById(item.dataset.target);
+        if (!target) return;
+        target.scrollIntoView({ behavior: dockReduceMotion ? 'auto' : 'smooth', block: 'start' });
+      });
+    });
+
+    function setActiveDockItem(id) {
+      dockItems.forEach(function (item) {
+        item.classList.toggle('is-active', item.dataset.target === id);
+      });
+    }
+
+    window.addEventListener('scroll', function () {
+      dock.classList.toggle('is-visible', window.scrollY > window.innerHeight * 0.5);
+    }, { passive: true });
+
+    if ('IntersectionObserver' in window && dockSections.length) {
+      var dockObserver = new IntersectionObserver(function (entries) {
+        var visible = entries.filter(function (entry) { return entry.isIntersecting; });
+        if (!visible.length) return;
+        visible.sort(function (a, b) { return b.intersectionRatio - a.intersectionRatio; });
+        setActiveDockItem(visible[0].target.id);
+      }, { threshold: [0.3, 0.6] });
+      dockSections.forEach(function (section) { dockObserver.observe(section); });
+    }
+  }
 })();
