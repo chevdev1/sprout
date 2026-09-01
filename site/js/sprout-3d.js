@@ -8,6 +8,8 @@ import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
   if (!container || !canvas) return;
 
   var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var isMobileView = window.matchMedia('(max-width: 860px), (hover: none)').matches;
+  var heroVisible = true;
   var modelReady = false;
   var modelMesh = null;
   var basePositions = null;
@@ -35,10 +37,10 @@ import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
   var renderer = new THREE.WebGLRenderer({
     canvas: canvas,
     alpha: true,
-    antialias: true,
+    antialias: !isMobileView,
     powerPreference: 'high-performance'
   });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobileView ? 1.25 : 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.52;
@@ -79,9 +81,9 @@ import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
     var rect = container.getBoundingClientRect();
     var cx = rect.left + rect.width / 2;
     var cy = rect.top + rect.height / 2;
-    var nx = clamp((event.clientX - cx) / (window.innerWidth * 0.5), -1, 1);
-    var ny = clamp((event.clientY - cy) / (window.innerHeight * 0.5), -1, 1);
-    var MAX_TILT = 0.13; // radians — a clearly visible tilt toward the cursor, not just a hint of one
+    var nx = clamp((event.clientX - cx) / (rect.width * 0.5), -1, 1);
+    var ny = clamp((event.clientY - cy) / (rect.height * 0.5), -1, 1);
+    var MAX_TILT = 0.24;
     tilt.ty = nx * MAX_TILT;
     tilt.tx = ny * -MAX_TILT;
     pointerInsideHero = true;
@@ -91,9 +93,8 @@ import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
     tilt.tx = 0;
     tilt.ty = 0;
   }
-  var heroSection = container.closest('.hero') || document;
-  heroSection.addEventListener('pointermove', onHeroPointerMove);
-  heroSection.addEventListener('pointerleave', resetHeroTilt);
+  container.addEventListener('pointermove', onHeroPointerMove);
+  container.addEventListener('pointerleave', resetHeroTilt);
 
   var raycaster = new THREE.Raycaster();
   var pointer = new THREE.Vector2();
@@ -280,23 +281,7 @@ import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
     if (drag.active) return;
 
     var result = getHit(event);
-    if (!result) {
-      container.classList.remove('is-hovering');
-      return;
-    }
-
-    container.classList.add('is-hovering');
-    setPointer(event);
-    if (result.zone === 'stem') {
-      bend.stem.ty = pointer.x * 0.12;
-      bend.stem.tx = pointer.y * -0.08;
-    } else if (result.zone === 'left') {
-      bend.left.tz = pointer.x * 0.16;
-      bend.left.tx = pointer.y * -0.1;
-    } else {
-      bend.right.tz = pointer.x * -0.16;
-      bend.right.tx = pointer.y * -0.1;
-    }
+    container.classList.toggle('is-hovering', !!result);
   }
 
   function onPointerUp(event) {
@@ -364,10 +349,11 @@ import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
     bend.right.tx = Math.cos(time * 0.42 + 0.9) * 0.012;
   }
 
-  var IDLE_SPIN_SPEED = 0.006; // rad/frame — one full turn in ~17s at 60fps, clearly noticeable but still smooth
+  var IDLE_SPIN_SPEED = isMobileView ? 0.0035 : 0.006;
 
   function animate() {
     requestAnimationFrame(animate);
+    if (!heroVisible) return;
 
     if (!drag.active && !container.classList.contains('is-hovering') && modelReady) {
       idleAnimation();
@@ -384,7 +370,7 @@ import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
     // lerp approach as everything else here rather than snapping to the
     // pointer, and it decays back to 0 once the pointer leaves the hero.
     if (!reducedMotion) {
-      var tiltEase = pointerInsideHero ? 0.06 : 0.045;
+      var tiltEase = pointerInsideHero ? 0.1 : 0.06;
       tilt.x = lerp(tilt.x, tilt.tx, tiltEase);
       tilt.y = lerp(tilt.y, tilt.ty, tiltEase);
       plantTilt.rotation.x = tilt.x;
@@ -407,7 +393,8 @@ import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 
     if (modelReady) {
       applyDeformation();
-      if (normalFrame > 0 && normalFrame % 8 === 0) {
+      var normalInterval = isMobileView ? 14 : (drag.active ? 6 : 10);
+      if (normalFrame > 0 && normalFrame % normalInterval === 0) {
         modelMesh.geometry.computeVertexNormals();
         normalFrame = 0;
       }
@@ -493,6 +480,12 @@ import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 
   resize();
   window.addEventListener('resize', resize);
+  if ('IntersectionObserver' in window) {
+    var heroObserver = new IntersectionObserver(function (entries) {
+      heroVisible = entries[0].isIntersecting;
+    }, { threshold: 0.05 });
+    heroObserver.observe(container);
+  }
   animate();
 
   // The model is ~15MB of textures + geometry — deliberately deferred a

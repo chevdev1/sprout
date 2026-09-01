@@ -175,6 +175,12 @@
   var showcaseTransitionLocked = false;
   var showcaseTouchStart = null;
   var showcaseTouchPointerId = null;
+  var showcaseColorBtns = document.querySelectorAll('.showcase-color');
+  var showcaseAutoTimer = null;
+  var showcaseAutoMs = 5500;
+  var showcaseReduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var isMobileShowcase = window.matchMedia('(max-width: 860px)').matches;
+  var showcaseLockMs = isMobileShowcase ? 300 : 720;
   var showcaseContent = [
     {
       kicker: '01 / WALLET',
@@ -206,7 +212,7 @@
       showcaseTransitionLocked = true;
       window.setTimeout(function () {
         showcaseTransitionLocked = false;
-      }, window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 720);
+      }, showcaseReduceMotion ? 0 : showcaseLockMs);
     }
     var wrapsForward = direction > 0 && previousSlide === showcaseScreens.length - 1 && nextSlide === 0;
     var wrapsBackward = direction < 0 && previousSlide === 0 && nextSlide === showcaseScreens.length - 1;
@@ -235,7 +241,13 @@
     showcaseDescription.textContent = content.description;
     showcaseCaption.textContent = content.caption;
 
-    if ((wrapsForward || wrapsBackward) && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    showcaseColorBtns.forEach(function (btn) {
+      var isActive = +btn.dataset.slide === activeShowcaseSlide;
+      btn.classList.toggle('is-active', isActive);
+      btn.setAttribute('aria-current', String(isActive));
+    });
+
+    if ((wrapsForward || wrapsBackward) && !showcaseReduceMotion && !isMobileShowcase) {
       var enteringClass = wrapsForward ? 'is-entering-next' : 'is-entering-prev';
       window.requestAnimationFrame(function () {
         window.requestAnimationFrame(function () {
@@ -247,23 +259,57 @@
     }
   }
 
+  function startShowcaseAuto() {
+    if (showcaseReduceMotion || !showcaseStage) return;
+    stopShowcaseAuto();
+    showcaseAutoTimer = window.setInterval(function () {
+      if (!showcaseTransitionLocked) showShowcaseSlide(activeShowcaseSlide + 1, 1);
+    }, showcaseAutoMs);
+  }
+
+  function stopShowcaseAuto() {
+    if (showcaseAutoTimer) {
+      window.clearInterval(showcaseAutoTimer);
+      showcaseAutoTimer = null;
+    }
+  }
+
+  function pauseShowcaseAutoThenResume() {
+    stopShowcaseAuto();
+    window.clearTimeout(showcaseStage._autoResumeTimer);
+    showcaseStage._autoResumeTimer = window.setTimeout(startShowcaseAuto, showcaseAutoMs * 1.4);
+  }
+
   if (showcaseStage && showcaseScreens.length) {
     showShowcaseSlide(0, 0);
+    startShowcaseAuto();
+    showcaseColorBtns.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var target = +btn.dataset.slide;
+        showShowcaseSlide(target, target - activeShowcaseSlide);
+        pauseShowcaseAutoThenResume();
+      });
+    });
     showcasePrev.addEventListener('click', function () {
       showShowcaseSlide(activeShowcaseSlide - 1, -1);
+      pauseShowcaseAutoThenResume();
     });
     showcaseNext.addEventListener('click', function () {
       showShowcaseSlide(activeShowcaseSlide + 1, 1);
+      pauseShowcaseAutoThenResume();
     });
     showcaseZonePrev.addEventListener('click', function () {
       showShowcaseSlide(activeShowcaseSlide - 1, -1);
+      pauseShowcaseAutoThenResume();
     });
     showcaseZoneNext.addEventListener('click', function () {
       showShowcaseSlide(activeShowcaseSlide + 1, 1);
+      pauseShowcaseAutoThenResume();
     });
     showcaseDots.forEach(function (dot) {
       dot.addEventListener('click', function () {
         showShowcaseSlide(+dot.dataset.slide, +dot.dataset.slide - activeShowcaseSlide);
+        pauseShowcaseAutoThenResume();
       });
     });
     showcaseStage.addEventListener('keydown', function (event) {
@@ -286,7 +332,10 @@
     showcaseStage.addEventListener('pointerup', function (event) {
       if (showcaseTouchStart === null || event.pointerId !== showcaseTouchPointerId) return;
       var distance = event.clientX - showcaseTouchStart;
-      if (Math.abs(distance) > 48) showShowcaseSlide(activeShowcaseSlide + (distance < 0 ? 1 : -1), distance < 0 ? 1 : -1);
+      if (Math.abs(distance) > 48) {
+        showShowcaseSlide(activeShowcaseSlide + (distance < 0 ? 1 : -1), distance < 0 ? 1 : -1);
+        pauseShowcaseAutoThenResume();
+      }
       showcaseTouchStart = null;
       showcaseTouchPointerId = null;
       if (showcaseStage.hasPointerCapture(event.pointerId)) showcaseStage.releasePointerCapture(event.pointerId);
@@ -294,6 +343,14 @@
     showcaseStage.addEventListener('pointercancel', function () {
       showcaseTouchStart = null;
       showcaseTouchPointerId = null;
+    });
+    showcaseStage.addEventListener('mouseenter', stopShowcaseAuto);
+    showcaseStage.addEventListener('mouseleave', startShowcaseAuto);
+    showcaseStage.addEventListener('focusin', stopShowcaseAuto);
+    showcaseStage.addEventListener('focusout', startShowcaseAuto);
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) stopShowcaseAuto();
+      else startShowcaseAuto();
     });
   }
 
