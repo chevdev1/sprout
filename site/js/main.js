@@ -348,13 +348,16 @@
   });
 
   if (howVisual && howSteps.length && 'IntersectionObserver' in window) {
-    var howObserver = new IntersectionObserver(function (entries) {
-      var visibleSteps = entries.filter(function (entry) { return entry.isIntersecting; });
-      if (!visibleSteps.length) return;
-      visibleSteps.sort(function (a, b) { return b.intersectionRatio - a.intersectionRatio; });
-      setHowStage(+visibleSteps[0].target.dataset.howStep);
-    }, { threshold: [0.2, 0.6], rootMargin: '-28% 0px -42% 0px' });
-    howSteps.forEach(function (step) { howObserver.observe(step); });
+    var useScrollHowStages = window.matchMedia('(hover: hover) and (pointer: fine) and (min-width: 861px)').matches;
+    if (useScrollHowStages) {
+      var howObserver = new IntersectionObserver(function (entries) {
+        var visibleSteps = entries.filter(function (entry) { return entry.isIntersecting; });
+        if (!visibleSteps.length) return;
+        visibleSteps.sort(function (a, b) { return b.intersectionRatio - a.intersectionRatio; });
+        setHowStage(+visibleSteps[0].target.dataset.howStep);
+      }, { threshold: [0.2, 0.6], rootMargin: '-28% 0px -42% 0px' });
+      howSteps.forEach(function (step) { howObserver.observe(step); });
+    }
   }
 
   setHowStage(0);

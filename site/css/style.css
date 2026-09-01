@@ -1991,33 +1991,93 @@ footer{padding:56px 0 40px;}
    a layout meant to be read top-to-bottom got crammed sideways on any
    tablet or landscape phone between 560–860px. */
 @media (max-width:860px){
-  /* Reverted a sticky-card attempt here: it hit a WebKit rendering bug
-     on real iOS Safari — a position:sticky element combined with
-     overflow:hidden + isolation:isolate would sometimes fail to paint
-     its contents on first layout (a known class of Safari compositing
-     bug), leaving a blank gap where the card should be until a scroll
-     forced a repaint. Reliable > clever here — back to the simple
-     scroll-past block that was actually working. */
-  .how-layout{grid-template-columns:1fr;gap:34px;}
-  .how-visual{position:relative;top:auto;height:min(56vh,420px);}
-  .how-rail{display:none;}
-  .how-layout .steps{display:flex;flex-direction:column;}
-  .how-layout .step-card{
-    display:block;
-    min-height:44px; /* comfortable tap target for the click-to-select stage cards */
-    padding:0 0 28px;
+  .how-layout{grid-template-columns:1fr;gap:24px;}
+  /* Sticky preview without Safari blank-panel bug: drop isolation:isolate */
+  .how-visual{
+    position:sticky;
+    top:76px;
+    z-index:2;
+    height:min(52vw,300px);
+    min-height:220px;
+    max-height:320px;
+    isolation:auto;
+    overflow:clip;
+    border-radius:22px;
   }
-  .how-layout .step-num{margin-bottom:14px;}
-  .how-layout .step-card h3{font-size:clamp(20px,5vw,26px);line-height:1.18;max-width:none;}
-  .how-layout .step-card p{max-width:44ch;}
+  .how-card-stack{top:50%;transform:translate(-50%,-50%);width:88%;}
+  .how-card,.how-visual[data-stage] .how-card{
+    filter:none!important;
+    will-change:auto;
+    transition:transform .35s ease,opacity .3s ease;
+  }
+  .how-visual-glow{will-change:auto;transition:none;}
+  .how-flow span{backdrop-filter:none;-webkit-backdrop-filter:none;}
+  /* Same step layout as desktop: vertical rail + number/text grid */
+  .how-rail{display:block;left:15px;top:0;bottom:0;}
+  .how-layout .steps{display:flex;flex-direction:column;padding:0 0 8px;}
+  .how-layout .step-card{
+    display:grid;
+    grid-template-columns:38px 1fr;
+    gap:14px 16px;
+    align-items:start;
+    min-height:0;
+    padding:0 0 28px;
+    margin:0;
+    opacity:.42;
+    transform:none;
+    background:transparent;
+    border:0;
+    border-radius:0;
+    box-shadow:none;
+    transition:opacity .3s ease;
+    cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .how-layout .step-card.is-active{
+    opacity:1;
+    background:transparent;
+    transform:none;
+  }
+  .how-layout .step-num{
+    grid-column:1;
+    grid-row:1 / span 2;
+    align-self:start;
+    width:32px;
+    height:32px;
+    margin:0;
+    transform:none;
+  }
+  .how-layout .step-card.is-active .step-num{transform:none;}
+  .how-layout .step-card h3{
+    grid-column:2;
+    font-size:clamp(18px,4.5vw,24px);
+    line-height:1.12;
+    max-width:none;
+    transform:none;
+    transition:none;
+  }
+  .how-layout .step-card p{
+    grid-column:2;
+    max-width:none;
+    margin-top:8px;
+    font-size:13.5px;
+    line-height:1.5;
+    transform:none;
+    transition:none;
+  }
+  .how-layout .step-card.is-active h3,
+  .how-layout .step-card.is-active p{transform:none;}
 }
 @media (max-width:560px){
-  .how-visual{height:min(48vh,340px);border-radius:22px;}
-  .how-visual-top,.how-visual-bottom{right:18px;left:18px;}
-  .how-card-stack{top:89px;width:94%;}
-  .how-flow{right:18px;bottom:55px;left:18px;}
-  .how-flow span{padding:9px;font-size:14px;}
-  .how-layout .step-card{padding:0 0 26px;}
+  .how-visual{top:72px;height:min(54vw,260px);min-height:200px;border-radius:18px;}
+  .how-visual-top,.how-visual-bottom{right:16px;left:16px;}
+  .how-card-stack{width:92%;}
+  .how-flow{right:16px;bottom:48px;left:16px;}
+  .how-flow span{padding:8px 10px;font-size:13px;}
+  .how-layout .step-card{padding:0 0 22px;gap:12px 14px;}
+  .how-layout .step-num{width:28px;height:28px;font-size:10px;}
+  .how-layout .step-card h3{font-size:17px;}
+  .how-layout .step-card p{font-size:12.5px;margin-top:6px;}
 }
 /* short viewports (phones in landscape) — the fixed-height demo panel
    shouldn't eat the whole screen before the user reaches any text */
@@ -2220,10 +2280,7 @@ footer{padding:56px 0 40px;}
   .marquee-label{font-size:11px;margin-bottom:14px;}
   .marquee-note{font-size:10px;}
 
-  .how-layout .step-card{padding:0 0 20px;}
-  .how-layout .step-num{width:28px;height:28px;font-size:10px;margin-bottom:10px;}
-  .how-layout .step-card h3{font-size:18px;}
-  .how-layout .step-card p{font-size:12.5px;margin-top:6px;}
+  #how .section-head{margin-bottom:28px;}
 
   .calc-section .section-head h2{font-size:24px;}
   .calc-panel{padding:20px !important;gap:24px !important;}
