@@ -60,11 +60,40 @@ import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 
   var plantRoot = new THREE.Group();
   var plantSpin = new THREE.Group();
-  plantRoot.add(plantSpin);
+  var plantTilt = new THREE.Group();
+  plantTilt.add(plantSpin);
+  plantRoot.add(plantTilt);
   scene.add(plantRoot);
 
   var spinY = 0;
   var spinTargetY = 0;
+
+  // Whole-element parallax: a few degrees of tilt toward the cursor,
+  // independent of the constant idle rotation and of the drag-to-bend
+  // interaction (those live on plantSpin/the deform weights — this only
+  // ever touches plantTilt, so nothing fights for the same property).
+  var tilt = { x: 0, y: 0, tx: 0, ty: 0 };
+  var pointerInsideHero = false;
+
+  function onHeroPointerMove(event) {
+    var rect = container.getBoundingClientRect();
+    var cx = rect.left + rect.width / 2;
+    var cy = rect.top + rect.height / 2;
+    var nx = clamp((event.clientX - cx) / (window.innerWidth * 0.5), -1, 1);
+    var ny = clamp((event.clientY - cy) / (window.innerHeight * 0.5), -1, 1);
+    var MAX_TILT = 0.085; // radians — kept small, this is a "notice it, don't be distracted by it" effect
+    tilt.ty = nx * MAX_TILT;
+    tilt.tx = ny * -MAX_TILT;
+    pointerInsideHero = true;
+  }
+  function resetHeroTilt() {
+    pointerInsideHero = false;
+    tilt.tx = 0;
+    tilt.ty = 0;
+  }
+  var heroSection = container.closest('.hero') || document;
+  heroSection.addEventListener('pointermove', onHeroPointerMove);
+  heroSection.addEventListener('pointerleave', resetHeroTilt);
 
   var raycaster = new THREE.Raycaster();
   var pointer = new THREE.Vector2();
@@ -335,11 +364,31 @@ import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
     bend.right.tx = Math.cos(time * 0.42 + 0.9) * 0.012;
   }
 
+  var IDLE_SPIN_SPEED = 0.0018; // rad/frame — one full turn in roughly 70s at 60fps, deliberately slow/weightless
+
   function animate() {
     requestAnimationFrame(animate);
 
     if (!drag.active && !container.classList.contains('is-hovering') && modelReady) {
       idleAnimation();
+    }
+
+    // Constant seamless rotation — a running accumulator, not a keyframe
+    // loop, so there's no seam to land on and no "reset" to notice.
+    if (!reducedMotion && !drag.active) {
+      plantRoot.rotation.y += IDLE_SPIN_SPEED;
+    }
+
+    // Whole-model parallax toward the cursor, independent of the idle
+    // spin and of the drag-bend interaction — smoothed with the same
+    // lerp approach as everything else here rather than snapping to the
+    // pointer, and it decays back to 0 once the pointer leaves the hero.
+    if (!reducedMotion) {
+      var tiltEase = pointerInsideHero ? 0.06 : 0.045;
+      tilt.x = lerp(tilt.x, tilt.tx, tiltEase);
+      tilt.y = lerp(tilt.y, tilt.ty, tiltEase);
+      plantTilt.rotation.x = tilt.x;
+      plantTilt.rotation.y = tilt.y;
     }
 
     spinY = lerp(spinY, spinTargetY, drag.active ? 0.14 : 0.04);
@@ -370,12 +419,13 @@ import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
   var textureLoader = new THREE.TextureLoader();
   var modelPath = 'assets/sprout-model/';
 
-  Promise.all([
-    textureLoader.loadAsync(modelPath + 'texture_diffuse.png'),
-    textureLoader.loadAsync(modelPath + 'texture_normal.png'),
-    textureLoader.loadAsync(modelPath + 'texture_roughness.png'),
-    textureLoader.loadAsync(modelPath + 'texture_metallic.png')
-  ]).then(function (maps) {
+  function loadModel() {
+    return Promise.all([
+      textureLoader.loadAsync(modelPath + 'texture_diffuse.png'),
+      textureLoader.loadAsync(modelPath + 'texture_normal.png'),
+      textureLoader.loadAsync(modelPath + 'texture_roughness.png'),
+      textureLoader.loadAsync(modelPath + 'texture_metallic.png')
+    ]).then(function (maps) {
     maps[0].colorSpace = THREE.SRGBColorSpace;
     maps.forEach(function (map) {
       map.anisotropy = renderer.capabilities.getMaxAnisotropy();
@@ -425,14 +475,34 @@ import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
       fitCamera();
       modelReady = true;
       container.classList.add('is-ready');
+      // Fade the skeleton out rather than yanking it — it and the canvas
+      // cross-fade over the same .5s window (see .hero-sprout-loader.is-done
+      // in css/style.css), then it's removed once fully transparent.
+      if (loaderEl) {
+        loaderEl.classList.add('is-done');
+        window.setTimeout(function () {
+          if (loaderEl.parentNode) loaderEl.parentNode.removeChild(loaderEl);
+        }, 520);
+      }
+    });
+    }).catch(function (err) {
+      console.error('Sprout 3D model failed to load', err);
       if (loaderEl) loaderEl.remove();
     });
-  }).catch(function (err) {
-    console.error('Sprout 3D model failed to load', err);
-    if (loaderEl) loaderEl.textContent = '';
-  });
+  }
 
   resize();
   window.addEventListener('resize', resize);
   animate();
+
+  // The model is ~15MB of textures + geometry — deliberately deferred a
+  // tick past first paint so it never competes with fonts/critical CSS
+  // for bandwidth on the initial request wave. requestIdleCallback (with
+  // a short timeout so it can't be starved indefinitely) is a better fit
+  // here than a fixed setTimeout guess.
+  if ('requestIdleCallback' in window) {
+    window.requestIdleCallback(loadModel, { timeout: 1200 });
+  } else {
+    window.setTimeout(loadModel, 200);
+  }
 })();

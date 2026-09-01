@@ -111,7 +111,16 @@ ul{list-style:none;}
 }
 
 /* ---------- reveal-on-scroll ---------- */
-[data-reveal]{opacity:0;transform:translateY(18px);transition:opacity .7s var(--ease), transform .7s var(--ease);}
+/* Same motion tokens as everything else on the page (:root, top of file) —
+   one system, not a bespoke duration for this one effect. Only opacity/
+   transform animate (IntersectionObserver-driven, js/main.js), reduced
+   motion is handled below, and this is applied per-section rather than
+   per-element — see the data-reveal count in index.html: it marks maybe
+   18 blocks total, not every card/row, on purpose. */
+[data-reveal]{
+  opacity:0;transform:translateY(18px);
+  transition:opacity var(--motion-slow) var(--ease-out-expo), transform var(--motion-slow) var(--ease-out-expo);
+}
 [data-reveal].is-visible{opacity:1;transform:translateY(0);}
 
 /* ---------- nav ---------- */
@@ -139,13 +148,11 @@ ul{list-style:none;}
     transform var(--motion-base) var(--ease-spring),
     filter var(--motion-base) var(--ease-in-out-quart);
 }
-.nav-brand:hover svg{transform:scale(1.08) rotate(-4deg);}
 .nav-links{display:flex;align-items:center;gap:32px;}
 .nav-links a{
   font-size:14px;color:var(--mist);
   transition:color var(--motion-base) var(--ease-in-out-quart), text-shadow var(--motion-base) var(--ease-in-out-quart);
 }
-.nav-links a:hover{color:var(--bark);}
 .nav-links a[aria-current="page"]{color:var(--bark);}
 .nav-actions{display:flex;align-items:center;gap:12px;}
 .nav-cta{
@@ -158,19 +165,35 @@ ul{list-style:none;}
     color var(--motion-base) var(--ease-in-out-quart),
     box-shadow var(--motion-base) var(--ease-in-out-quart);
 }
-.nav-cta:hover{background:var(--ink-2);transform:translateY(-1px);}
 .nav-toggle{display:none;}
 
-/* dark mode — accent-yellow hover, Robinhood-style. Scoped to the two
-   selectors so it works both for an explicit toggle and OS-level dark. */
-:root[data-theme="dark"] .nav-brand:hover{color:var(--sprout);}
-:root[data-theme="dark"] .nav-brand:hover svg{fill:var(--sprout);filter:drop-shadow(0 0 10px rgba(216,255,77,.5));}
-:root[data-theme="dark"] .nav-links a:hover{color:var(--sprout);text-shadow:0 0 16px rgba(216,255,77,.35);}
-:root[data-theme="dark"] .nav-cta:hover{
-  color:var(--sprout);
-  box-shadow:0 0 0 1px rgba(216,255,77,.35), 0 10px 28px -10px rgba(216,255,77,.4);
+/* Touch tactile feedback — transform/opacity only, so tapping never
+   shifts layout. No :hover counterpart needed here: these apply on
+   every pointer type, which is fine since neither moves anything. */
+.nav-cta:active{transform:scale(.97);}
+.nav-toggle:active{transform:scale(.9);}
+
+/* Every :hover below is gated to devices that actually have a mouse.
+   Without this, touch browsers "stick" the hover state on tap (fake
+   hover simulation) — combined with a transform like translateY, that
+   reads exactly as the "buttons jump on mobile" bug: the hover engages
+   on touchstart and doesn't let go until the next tap elsewhere. */
+@media (hover:hover) and (pointer:fine){
+  .nav-brand:hover svg{transform:scale(1.08) rotate(-4deg);}
+  .nav-links a:hover{color:var(--bark);}
+  .nav-cta:hover{background:var(--ink-2);transform:translateY(-1px);}
+
+  /* dark mode — accent-yellow hover, Robinhood-style. Scoped to the two
+     selectors so it works both for an explicit toggle and OS-level dark. */
+  :root[data-theme="dark"] .nav-brand:hover{color:var(--sprout);}
+  :root[data-theme="dark"] .nav-brand:hover svg{fill:var(--sprout);filter:drop-shadow(0 0 10px rgba(216,255,77,.5));}
+  :root[data-theme="dark"] .nav-links a:hover{color:var(--sprout);text-shadow:0 0 16px rgba(216,255,77,.35);}
+  :root[data-theme="dark"] .nav-cta:hover{
+    color:var(--sprout);
+    box-shadow:0 0 0 1px rgba(216,255,77,.35), 0 10px 28px -10px rgba(216,255,77,.4);
+  }
 }
-@media (prefers-color-scheme:dark){
+@media (hover:hover) and (pointer:fine) and (prefers-color-scheme:dark){
   :root:not([data-theme="light"]) .nav-brand:hover{color:var(--sprout);}
   :root:not([data-theme="light"]) .nav-brand:hover svg{fill:var(--sprout);filter:drop-shadow(0 0 10px rgba(216,255,77,.5));}
   :root:not([data-theme="light"]) .nav-links a:hover{color:var(--sprout);text-shadow:0 0 16px rgba(216,255,77,.35);}
@@ -194,7 +217,9 @@ ul{list-style:none;}
     border-color var(--motion-fast) var(--ease-out-expo),
     transform var(--motion-fast) var(--ease-spring);
 }
-.theme-toggle:hover{transform:translateY(-1px);border-color:var(--bark);}
+@media (hover:hover) and (pointer:fine){
+  .theme-toggle:hover{transform:translateY(-1px);border-color:var(--bark);}
+}
 .theme-toggle:active{transform:translateY(0) scale(.92);}
 .theme-icon{
   position:absolute;width:18px;height:18px;
@@ -1063,18 +1088,57 @@ input[type="range"]::-moz-range-thumb{
 .feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden;}
 @media (max-width:860px){.feature-grid{grid-template-columns:1fr 1fr;}}
 @media (max-width:560px){.feature-grid{grid-template-columns:1fr;}}
-.feature-card{background:var(--surface);padding:32px 28px;display:flex;flex-direction:column;gap:16px;transition:background .25s;}
-.feature-card:hover{background:var(--bg);}
+.feature-card{
+  position:relative;background:var(--surface);padding:32px 28px;
+  display:flex;flex-direction:column;gap:16px;
+  transition:
+    background var(--motion-slow) var(--ease-in-out-quart),
+    box-shadow var(--motion-slow) var(--ease-in-out-quart),
+    transform var(--motion-base) var(--ease-spring);
+}
 .feature-card.highlight{background:var(--ink);color:var(--paper);}
 .feature-card.highlight .feature-icon{background:rgba(216,255,77,0.14);}
 .feature-card.highlight .feature-icon svg{stroke:var(--sprout);}
 .feature-card.highlight p{color:var(--mist-on-ink);}
-.feature-icon{width:38px;height:38px;border-radius:10px;background:var(--paper-dim);display:flex;align-items:center;justify-content:center;}
-.feature-icon svg{width:19px;height:19px;stroke:var(--bark);fill:none;stroke-width:1.6;}
+.feature-icon{
+  width:38px;height:38px;border-radius:10px;background:var(--paper-dim);
+  display:flex;align-items:center;justify-content:center;
+  transition:background var(--motion-slow) var(--ease-in-out-quart);
+}
+.feature-icon svg{
+  width:19px;height:19px;stroke:var(--bark);fill:none;stroke-width:1.6;
+  transition:stroke var(--motion-slow) var(--ease-in-out-quart);
+}
 .feature-card h3{font-size:16px;font-weight:600;letter-spacing:-0.01em;}
-.feature-card p{font-size:14px;color:var(--mist);line-height:1.55;}
-.feature-tag{font-size:11px;font-weight:600;color:var(--sprout-deep);text-transform:uppercase;letter-spacing:0.04em;}
+.feature-card p{font-size:14px;color:var(--mist);line-height:1.55;transition:color var(--motion-slow) var(--ease-in-out-quart);}
+.feature-tag{
+  font-size:11px;font-weight:600;color:var(--sprout-deep);text-transform:uppercase;letter-spacing:0.04em;
+  transition:color var(--motion-slow) var(--ease-in-out-quart);
+}
 .feature-card.highlight .feature-tag{color:var(--sprout);}
+
+/* Tap feedback on every pointer type — a brief press toward the dark
+   fill, releasing back. This is the touch fallback: cards aren't links
+   (nothing to navigate to), so a momentary press response reads more
+   honestly than faking a hover state that has to be un-stuck later.
+   The permanently-dark .highlight card also already shows every touch
+   visitor what the "filled" look is, without needing a gesture. */
+.feature-card:not(.highlight):active{background:var(--ink);transform:scale(.99);}
+.feature-card:not(.highlight):active h3{color:var(--paper);}
+.feature-card:not(.highlight):active p{color:var(--mist-on-ink);}
+.feature-card:not(.highlight):active .feature-icon{background:rgba(216,255,77,.14);}
+.feature-card:not(.highlight):active .feature-icon svg{stroke:var(--sprout);}
+.feature-card:not(.highlight):active .feature-tag{color:var(--sprout);}
+
+@media (hover:hover) and (pointer:fine){
+  .feature-card:hover{box-shadow:0 22px 44px -22px rgba(13,17,12,.4);transform:translateY(-3px);z-index:2;}
+  .feature-card:not(.highlight):hover{background:var(--ink);}
+  .feature-card:not(.highlight):hover h3{color:var(--paper);}
+  .feature-card:not(.highlight):hover p{color:var(--mist-on-ink);}
+  .feature-card:not(.highlight):hover .feature-icon{background:rgba(216,255,77,.14);}
+  .feature-card:not(.highlight):hover .feature-icon svg{stroke:var(--sprout);}
+  .feature-card:not(.highlight):hover .feature-tag{color:var(--sprout);}
+}
 
 /* ---------- fees ---------- */
 .fees-table{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden;}
@@ -1598,9 +1662,15 @@ footer{padding:56px 0 40px;}
   .nav.menu-open .nav-toggle span:first-child{transform:translateY(3px) rotate(45deg);}
   .nav.menu-open .nav-toggle span:last-child{transform:translateY(-3px) rotate(-45deg);}
   .nav.menu-open .nav-links{position:absolute;top:64px;right:0;left:0;display:flex;flex-direction:column;align-items:stretch;gap:0;padding:8px;border:1px solid var(--line);border-radius:16px;background:var(--glass-solid);box-shadow:0 18px 40px rgba(13,17,12,.12);}
-  .nav.menu-open .nav-links a{padding:12px 14px;border-radius:10px;}
-  .nav.menu-open .nav-links a:hover{background:var(--bg);}
+  .nav.menu-open .nav-links a{
+    padding:12px 14px;border-radius:10px;
+    transition:background var(--motion-fast) var(--ease-in-out-quart), transform var(--motion-fast) var(--ease-spring);
+  }
+  .nav.menu-open .nav-links a:active{background:var(--bg);transform:scale(.98);}
   .nav-cta{padding:9px 13px;font-size:12px;}
+}
+@media (hover:hover) and (pointer:fine){
+  .nav.menu-open .nav-links a:hover{background:var(--bg);}
 }
 @media (max-width:560px){
   .nav-cta{display:none;}
@@ -1841,12 +1911,20 @@ footer{padding:56px 0 40px;}
     filter var(--motion-base) var(--ease-in-out-quart),
     transform var(--motion-fast) var(--ease-spring);
 }
-.dock-item:hover,.dock-item:focus-visible,.dock-item.is-active{
+.dock-item:focus-visible,.dock-item.is-active{
   color:var(--sprout);
   background:rgba(216,255,77,.09);
   filter:drop-shadow(0 0 10px rgba(216,255,77,.55));
 }
 .dock-item:focus-visible{outline:2px solid var(--sprout);outline-offset:2px;}
+.dock-item:active{transform:scale(.9);}
+@media (hover:hover) and (pointer:fine){
+  .dock-item:hover{
+    color:var(--sprout);
+    background:rgba(216,255,77,.09);
+    filter:drop-shadow(0 0 10px rgba(216,255,77,.55));
+  }
+}
 .dock-icon{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;}
 .dock-tooltip{
   position:absolute;bottom:calc(100% + 10px);left:50%;
@@ -1983,27 +2061,36 @@ footer{padding:56px 0 40px;}
 }
 .hero-sprout.is-ready .hero-sprout-canvas{opacity:1;}
 .hero-sprout-canvas.is-grabbed{cursor:grabbing;}
+/* Skeleton, not a spinner — a soft breathing glow roughly where the model
+   will resolve, so the eye has something coherent to rest on rather than
+   a generic loading ring. Cross-fades with the canvas's own fade-in
+   (both .5s) instead of popping out the instant the model is ready. */
 .hero-sprout-loader{
   position:absolute;
   inset:0;
   display:grid;
   place-items:center;
-  color:rgba(216,255,77,.55);
-  font-size:10px;
-  letter-spacing:.14em;
-  text-transform:uppercase;
   pointer-events:none;
+  opacity:1;
+  transition:opacity .5s var(--ease-in-out-quart);
 }
+.hero-sprout-loader.is-done{opacity:0;}
 .hero-sprout-loader::before{
   content:'';
-  width:28px;
-  height:28px;
-  border:2px solid rgba(216,255,77,.18);
-  border-top-color:rgba(216,255,77,.75);
-  border-radius:50%;
-  animation:sprout-loader-spin .8s linear infinite;
+  width:58%;
+  height:58%;
+  border-radius:44% 56% 52% 48% / 56% 48% 52% 44%;
+  background:radial-gradient(circle, rgba(216,255,77,.22), rgba(216,255,77,0) 72%);
+  filter:blur(6px);
+  animation:sprout-skeleton-breathe 2.2s var(--ease-in-out-quart) infinite;
 }
-@keyframes sprout-loader-spin{to{transform:rotate(360deg);}}
+@keyframes sprout-skeleton-breathe{
+  0%,100%{transform:scale(.94);opacity:.55;}
+  50%{transform:scale(1.04);opacity:.9;}
+}
+@media (prefers-reduced-motion:reduce){
+  .hero-sprout-loader::before{animation:none;opacity:.7;}
+}
 @media (max-width:1280px){
   .hero-sprout{right:48px;width:280px;height:270px;}
 }
