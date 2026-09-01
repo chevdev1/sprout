@@ -79,44 +79,27 @@
     });
   }
 
-  /* ---------- smooth scroll (Lenis) ---------- */
-  // Native `scroll-behavior: smooth` is at the mercy of the OS-level
-  // animation setting (Chromium maps "reduce motion" straight onto it),
-  // which silently turned every anchor click into a hard jump. Lenis runs
-  // its own rAF-driven easing instead, so it isn't gated by that signal.
+  /* ---------- smooth scroll ---------- */
+  // Previously routed through Lenis to work around native smooth-scroll
+  // silently going instant under OS-level "reduce motion". Traced that to
+  // our own code (scroll-behavior:auto in the reduced-motion query, plus
+  // this function itself downgrading to 'auto'), not a browser-enforced
+  // restriction — Chromium doesn't override an explicit
+  // scrollIntoView({behavior:'smooth'}) call based on that setting, only
+  // the CSS property's default for scrolls that don't specify a behavior.
   //
-  // Continuous wheel-scroll smoothing IS the kind of ambient motion
-  // prefers-reduced-motion exists to suppress, so that part stays off for
-  // reduced-motion users — wheel/trackpad scrolling stays native/instant.
-  // A nav click is a single, deliberate action though, so it still gets a
-  // short eased scrollTo rather than a raw teleport.
-  var lenis = null;
-  if (window.Lenis) {
-    lenis = new window.Lenis({
-      duration: reduceMotionQuery.matches ? 0.4 : 1.15,
-      easing: function (t) { return t === 1 ? 1 : 1 - Math.pow(2, -10 * t); }, // expo-out, matches --ease-out-expo's character
-      smoothWheel: !reduceMotionQuery.matches,
-      wheelMultiplier: 1
-    });
-    (function raf(time) {
-      lenis.raf(time);
-      window.requestAnimationFrame(raf);
-    })();
-  }
-
-  function navOffset() {
-    // Sticky header is a constant 72px at every breakpoint (see .nav-inner),
-    // plus a little breathing room so headings don't land flush under it.
-    return -(72 + 16);
-  }
-
+  // Removed Lenis entirely: its persistent requestAnimationFrame loop ran
+  // forever on every page, competing with the hero's WebGL render loop
+  // for the same main thread — exactly the two loops most likely to
+  // collide is a scroll-to-section animation and the 3D scene's own
+  // per-frame work, which is what "laggy/glitchy" on a real phone was.
+  // Native scrollIntoView costs nothing between scrolls and is
+  // browser/compositor-optimized during them.
   function smoothScrollTo(target) {
     if (!target) return;
-    if (lenis) {
-      lenis.scrollTo(target, { offset: navOffset() });
-    } else {
-      target.scrollIntoView({ behavior: reduceMotionQuery.matches ? 'auto' : 'smooth', block: 'start' });
-    }
+    // Unconditional 'smooth' — this is one deliberate, user-initiated
+    // action, not ambient motion, so it isn't gated behind reduced-motion.
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   // Delegate every in-page anchor (#section) through Lenis instead of
