@@ -158,6 +158,7 @@
 
   /* ---------- product showcase carousel ---------- */
   var showcaseStage = document.getElementById('showcaseStage');
+  var showcaseDeck = document.getElementById('showcaseDeck');
   var showcaseScreens = document.querySelectorAll('.showcase-card-slide[data-screen]');
   var showcaseDots = document.querySelectorAll('.showcase-dot');
   var showcasePrev = document.getElementById('showcasePrev');
@@ -181,24 +182,6 @@
   var showcaseReduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var isMobileShowcase = window.matchMedia('(max-width: 860px)').matches;
   var showcaseLockMs = isMobileShowcase ? 300 : 720;
-  var showcaseCardVariants = {
-    black: {
-      src: 'assets/cards/sprout-card-black.png',
-      badge: 'BLACK EDITION',
-      alt: 'Black Sprout virtual card'
-    },
-    white: {
-      src: 'assets/cards/sprout-card-white-full.png',
-      badge: 'CLOUD EDITION',
-      alt: 'White Sprout virtual card'
-    },
-    metal: {
-      src: 'assets/cards/sprout-card-metal-full.png',
-      badge: 'METAL EDITION',
-      alt: 'Metal Sprout virtual card'
-    }
-  };
-  var activeShowcaseCard = 'black';
   var showcaseContent = [
     {
       kicker: '01 / WALLET',
@@ -220,26 +203,6 @@
     }
   ];
 
-  function applyShowcaseCardColor(colorKey) {
-    if (!showcaseCardVariants[colorKey]) return;
-    activeShowcaseCard = colorKey;
-    var variant = showcaseCardVariants[colorKey];
-    showcaseScreens.forEach(function (screen) {
-      var img = screen.querySelector('.product-card-image img');
-      var badge = screen.querySelector('.image-card-badge');
-      if (img) {
-        img.src = variant.src;
-        img.alt = variant.alt;
-      }
-      if (badge) badge.textContent = variant.badge;
-    });
-    showcaseColorBtns.forEach(function (btn) {
-      var isActive = btn.dataset.card === colorKey;
-      btn.classList.toggle('is-active', isActive);
-      btn.setAttribute('aria-current', String(isActive));
-    });
-  }
-
   function showShowcaseSlide(index, direction) {
     if (!showcaseScreens.length) return;
     if (direction !== 0 && showcaseTransitionLocked) return;
@@ -248,6 +211,14 @@
     if (nextSlide === previousSlide && direction !== 0) return;
     if (direction !== 0) {
       showcaseTransitionLocked = true;
+      if (showcaseDeck) {
+        showcaseDeck.classList.remove('direction-next', 'direction-prev', 'is-changing');
+        void showcaseDeck.offsetWidth;
+        showcaseDeck.classList.add('is-changing', direction > 0 ? 'direction-next' : 'direction-prev');
+        window.setTimeout(function () {
+          showcaseDeck.classList.remove('is-changing', 'direction-next', 'direction-prev');
+        }, showcaseReduceMotion ? 0 : showcaseLockMs);
+      }
       window.setTimeout(function () {
         showcaseTransitionLocked = false;
       }, showcaseReduceMotion ? 0 : showcaseLockMs);
@@ -278,6 +249,12 @@
     showcaseTitle.textContent = content.title;
     showcaseDescription.textContent = content.description;
     showcaseCaption.textContent = content.caption;
+
+    showcaseColorBtns.forEach(function (btn) {
+      var isActive = +btn.dataset.slide === activeShowcaseSlide;
+      btn.classList.toggle('is-active', isActive);
+      btn.setAttribute('aria-current', String(isActive));
+    });
 
     if ((wrapsForward || wrapsBackward) && !showcaseReduceMotion && !isMobileShowcase) {
       var enteringClass = wrapsForward ? 'is-entering-next' : 'is-entering-prev';
@@ -314,13 +291,13 @@
 
   if (showcaseStage && showcaseScreens.length) {
     showShowcaseSlide(0, 0);
-    applyShowcaseCardColor(activeShowcaseCard);
     startShowcaseAuto();
     showcaseColorBtns.forEach(function (btn) {
       btn.addEventListener('click', function (event) {
         event.preventDefault();
         event.stopPropagation();
-        applyShowcaseCardColor(btn.dataset.card);
+        var target = +btn.dataset.slide;
+        showShowcaseSlide(target, target - activeShowcaseSlide);
         pauseShowcaseAutoThenResume();
       });
       btn.addEventListener('pointerdown', function (event) {
