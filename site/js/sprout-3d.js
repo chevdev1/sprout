@@ -83,7 +83,7 @@ import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
     var cy = rect.top + rect.height / 2;
     var nx = clamp((event.clientX - cx) / (rect.width * 0.5), -1, 1);
     var ny = clamp((event.clientY - cy) / (rect.height * 0.5), -1, 1);
-    var MAX_TILT = 0.24;
+    var MAX_TILT = isMobileView ? 0.14 : 0.18;
     tilt.ty = nx * MAX_TILT;
     tilt.tx = ny * -MAX_TILT;
     pointerInsideHero = true;
@@ -92,6 +92,11 @@ import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
     pointerInsideHero = false;
     tilt.tx = 0;
     tilt.ty = 0;
+  }
+  var heroSection = container.closest('.hero');
+  if (heroSection) {
+    heroSection.addEventListener('pointermove', onHeroPointerMove);
+    heroSection.addEventListener('pointerleave', resetHeroTilt);
   }
   container.addEventListener('pointermove', onHeroPointerMove);
   container.addEventListener('pointerleave', resetHeroTilt);
@@ -231,26 +236,85 @@ import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
   }
 
   function setBendTargets(zone, dx, dy) {
+    var dragScale = isMobileView ? 0.9 : 1;
     if (zone === 'stem') {
-      spinTargetY = drag.startSpinY + dx * 0.012;
-      bend.stem.tx = clamp(dy * -0.008, -0.22, 0.22);
+      spinTargetY = drag.startSpinY + dx * 0.012 * dragScale;
+      bend.stem.tx = clamp(dy * -0.009, -0.24, 0.24);
+      bend.stem.ty = clamp(dx * 0.004, -0.12, 0.12);
       return;
     }
     if (zone === 'left') {
-      bend.left.tz = clamp(dx * 0.025, -0.55, 0.55);
-      bend.left.tx = clamp(dy * -0.02, -0.42, 0.42);
-      bend.left.ty = clamp(dx * 0.006, -0.15, 0.15);
+      bend.left.tz = clamp(dx * 0.028 * dragScale, -0.62, 0.62);
+      bend.left.tx = clamp(dy * -0.022, -0.45, 0.45);
+      bend.left.ty = clamp(dx * 0.007, -0.18, 0.18);
       return;
     }
-    bend.right.tz = clamp(dx * -0.025, -0.55, 0.55);
-    bend.right.tx = clamp(dy * -0.02, -0.42, 0.42);
-    bend.right.ty = clamp(dx * -0.006, -0.15, 0.15);
+    bend.right.tz = clamp(dx * -0.028 * dragScale, -0.62, 0.62);
+    bend.right.tx = clamp(dy * -0.022, -0.45, 0.45);
+    bend.right.ty = clamp(dx * -0.007, -0.18, 0.18);
+  }
+
+  function setReachBendTowardPointer(result) {
+    var reach = isMobileView ? 1.05 : 1.25;
+    var pullX = bounds ? clamp(hitLocal.x / (bounds.sizeX * 0.48), -1, 1) : pointer.x;
+    var pullY = bounds ? clamp((hitLocal.y - bounds.minY) / bounds.sizeY, 0, 1) : 0.5;
+
+    if (result.zone === 'stem') {
+      bend.stem.ty = pointer.x * 0.22 * reach;
+      bend.stem.tx = pointer.y * -0.15 * reach;
+      bend.stem.tz = pointer.x * 0.05 * reach;
+      return;
+    }
+    if (result.zone === 'left') {
+      bend.left.tz = (pointer.x * 0.26 + pullX * 0.28) * reach;
+      bend.left.tx = pointer.y * -0.18 * reach;
+      bend.left.ty = (pointer.x * 0.12 + pullY * 0.08) * reach;
+      return;
+    }
+    bend.right.tz = (pointer.x * -0.26 + pullX * 0.28) * reach;
+    bend.right.tx = pointer.y * -0.18 * reach;
+    bend.right.ty = (pointer.x * -0.12 - pullY * 0.08) * reach;
+  }
+
+  function setAmbientReachTowardPointer() {
+    var reach = isMobileView ? 0.75 : 1;
+    bend.stem.ty = pointer.x * 0.12 * reach;
+    bend.stem.tx = pointer.y * -0.08 * reach;
+    bend.stem.tz = 0;
+    bend.left.tz = pointer.x * 0.1 * reach;
+    bend.left.tx = 0;
+    bend.left.ty = 0;
+    bend.right.tz = pointer.x * -0.1 * reach;
+    bend.right.tx = 0;
+    bend.right.ty = 0;
+  }
+
+  function hasActiveTargets() {
+    return Math.abs(bend.stem.tx) + Math.abs(bend.stem.ty) + Math.abs(bend.stem.tz) +
+      Math.abs(bend.left.tx) + Math.abs(bend.left.ty) + Math.abs(bend.left.tz) +
+      Math.abs(bend.right.tx) + Math.abs(bend.right.ty) + Math.abs(bend.right.tz) > 0.002;
   }
 
   function resetBendTargets() {
     bend.stem.tx = 0; bend.stem.ty = 0; bend.stem.tz = 0;
     bend.left.tx = 0; bend.left.ty = 0; bend.left.tz = 0;
     bend.right.tx = 0; bend.right.ty = 0; bend.right.tz = 0;
+  }
+
+  function resetGeometry() {
+    if (!modelMesh || !basePositions) return;
+    modelMesh.geometry.attributes.position.array.set(basePositions);
+    modelMesh.geometry.attributes.position.needsUpdate = true;
+    modelMesh.geometry.computeVertexNormals();
+    bend.stem.x = bend.stem.y = bend.stem.z = 0;
+    bend.left.x = bend.left.y = bend.left.z = 0;
+    bend.right.x = bend.right.y = bend.right.z = 0;
+  }
+
+  function hasResidualBend() {
+    return Math.abs(bend.stem.x) + Math.abs(bend.stem.y) + Math.abs(bend.stem.z) +
+      Math.abs(bend.left.x) + Math.abs(bend.left.y) + Math.abs(bend.left.z) +
+      Math.abs(bend.right.x) + Math.abs(bend.right.y) + Math.abs(bend.right.z) > 0.003;
   }
 
   function onPointerDown(event) {
@@ -274,14 +338,24 @@ import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
   function onPointerMove(event) {
     if (!modelReady) return;
 
+    onHeroPointerMove(event);
+
     if (drag.active && event.pointerId === drag.pointerId) {
       setBendTargets(drag.zone, event.clientX - drag.startX, event.clientY - drag.startY);
       return;
     }
     if (drag.active) return;
 
+    setPointer(event);
     var result = getHit(event);
-    container.classList.toggle('is-hovering', !!result);
+    if (!result) {
+      container.classList.remove('is-hovering');
+      if (!reducedMotion) setAmbientReachTowardPointer();
+      return;
+    }
+
+    container.classList.add('is-hovering');
+    if (!reducedMotion) setReachBendTowardPointer(result);
   }
 
   function onPointerUp(event) {
@@ -291,7 +365,7 @@ import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
     container.classList.remove('is-dragging');
     canvas.classList.remove('is-grabbed');
     resetBendTargets();
-    modelMesh.geometry.computeVertexNormals();
+    if (modelMesh && !isMobileView) modelMesh.geometry.computeVertexNormals();
     if (canvas.hasPointerCapture(event.pointerId)) canvas.releasePointerCapture(event.pointerId);
   }
 
@@ -333,29 +407,31 @@ import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 
   function idleAnimation() {
     if (reducedMotion || drag.active) return;
+    if (container.classList.contains('is-hovering') || pointerInsideHero) return;
 
-    time += 0.01;
+    time += isMobileView ? 0.005 : 0.007;
 
-    var wind = Math.sin(time * 0.38) * 0.03 + Math.sin(time * 0.91) * 0.006;
-    var windSide = Math.cos(time * 0.29) * 0.022;
+    var windAmp = isMobileView ? 0.012 : 0.02;
+    var wind = Math.sin(time * 0.32) * windAmp + Math.sin(time * 0.78) * (windAmp * 0.25);
+    var windSide = Math.cos(time * 0.24) * (windAmp * 0.7);
 
     bend.stem.tx = wind;
-    bend.stem.ty = windSide + Math.sin(time * 0.67) * 0.008;
+    bend.stem.ty = windSide + Math.sin(time * 0.55) * (windAmp * 0.3);
 
-    bend.left.tz = Math.sin(time * 0.43) * 0.035 + Math.sin(time * 0.82) * 0.015;
-    bend.left.tx = Math.sin(time * 0.35) * 0.014;
+    bend.left.tz = Math.sin(time * 0.38) * (windAmp * 1.1) + Math.sin(time * 0.7) * (windAmp * 0.45);
+    bend.left.tx = Math.sin(time * 0.3) * (windAmp * 0.5);
 
-    bend.right.tz = Math.sin(time * 0.37 + 1.8) * -0.032 + Math.cos(time * 0.74) * -0.012;
-    bend.right.tx = Math.cos(time * 0.42 + 0.9) * 0.012;
+    bend.right.tz = Math.sin(time * 0.34 + 1.8) * -(windAmp * 1.0) + Math.cos(time * 0.62) * -(windAmp * 0.4);
+    bend.right.tx = Math.cos(time * 0.38 + 0.9) * (windAmp * 0.45);
   }
 
-  var IDLE_SPIN_SPEED = isMobileView ? 0.0035 : 0.006;
+  var IDLE_SPIN_SPEED = isMobileView ? 0 : 0.0022;
 
   function animate() {
     requestAnimationFrame(animate);
     if (!heroVisible) return;
 
-    if (!drag.active && !container.classList.contains('is-hovering') && modelReady) {
+    if (!drag.active && !container.classList.contains('is-hovering') && !pointerInsideHero && modelReady) {
       idleAnimation();
     }
 
@@ -370,17 +446,18 @@ import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
     // lerp approach as everything else here rather than snapping to the
     // pointer, and it decays back to 0 once the pointer leaves the hero.
     if (!reducedMotion) {
-      var tiltEase = pointerInsideHero ? 0.1 : 0.06;
+      var tiltEase = pointerInsideHero ? (isMobileView ? 0.06 : 0.08) : 0.04;
       tilt.x = lerp(tilt.x, tilt.tx, tiltEase);
       tilt.y = lerp(tilt.y, tilt.ty, tiltEase);
       plantTilt.rotation.x = tilt.x;
       plantTilt.rotation.y = tilt.y;
     }
 
-    spinY = lerp(spinY, spinTargetY, drag.active ? 0.14 : 0.04);
+    spinY = lerp(spinY, spinTargetY, drag.active ? 0.1 : 0.03);
     plantSpin.rotation.y = spinY;
 
-    var ease = drag.active ? 0.18 : 0.045;
+    var hovering = container.classList.contains('is-hovering') || pointerInsideHero;
+    var ease = drag.active ? 0.14 : (hovering ? 0.1 : 0.045);
     bend.stem.x = lerp(bend.stem.x, bend.stem.tx, ease);
     bend.stem.y = lerp(bend.stem.y, bend.stem.ty, ease);
     bend.stem.z = lerp(bend.stem.z, bend.stem.tz, ease);
@@ -392,11 +469,14 @@ import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
     bend.right.z = lerp(bend.right.z, bend.right.tz, ease);
 
     if (modelReady) {
-      applyDeformation();
-      var normalInterval = isMobileView ? 14 : (drag.active ? 6 : 10);
-      if (normalFrame > 0 && normalFrame % normalInterval === 0) {
-        modelMesh.geometry.computeVertexNormals();
-        normalFrame = 0;
+      var deformActive = drag.active || hovering || hasResidualBend() || hasActiveTargets();
+      if (deformActive) {
+        applyDeformation();
+        var normalInterval = isMobileView ? 14 : (drag.active || hovering ? 5 : 10);
+        if (normalFrame > 0 && normalFrame % normalInterval === 0) {
+          modelMesh.geometry.computeVertexNormals();
+          normalFrame = 0;
+        }
       }
     }
 
@@ -414,8 +494,9 @@ import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
       textureLoader.loadAsync(modelPath + 'texture_metallic.png')
     ]).then(function (maps) {
     maps[0].colorSpace = THREE.SRGBColorSpace;
-    maps.forEach(function (map) {
-      map.anisotropy = renderer.capabilities.getMaxAnisotropy();
+    var maxAniso = renderer.capabilities.getMaxAnisotropy();
+    maps.forEach(function (map, i) {
+      map.anisotropy = isMobileView ? Math.min(2, maxAniso) : maxAniso;
     });
 
     var material = new THREE.MeshStandardMaterial({
@@ -423,10 +504,10 @@ import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
       normalMap: maps[1],
       roughnessMap: maps[2],
       metalnessMap: maps[3],
-      color: new THREE.Color(0xf2f8e8),
-      metalness: 0.12,
-      roughness: 0.82,
-      envMapIntensity: 0.2
+      color: new THREE.Color(0xf4fae8),
+      metalness: 0.05,
+      roughness: 0.9,
+      envMapIntensity: 0.12
     });
 
     var objLoader = new OBJLoader();
