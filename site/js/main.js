@@ -615,6 +615,7 @@
   var dock = document.getElementById('dock');
   var dockItems = dock ? Array.prototype.slice.call(dock.querySelectorAll('.dock-item')) : [];
   var dockReduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var dockHasRealCursor = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
   if (dock && dockItems.length) {
     var dockSections = dockItems
@@ -636,7 +637,13 @@
     function resetDockMagnify() {
       dockItems.forEach(function (item) { item.style.transform = ''; });
     }
-    if (!dockReduceMotion) {
+    // Touch devices sometimes fire a synthetic mousemove right at the tap
+    // point (compatibility mouse events after touchend), which magnified
+    // whatever icon was tapped and — since mobile never fires the
+    // matching mouseleave — left it stuck scaled/lifted until something
+    // else reset it. Desktop-only cursor-tracking effect, so gate it on
+    // an actual pointing device, not just reduced-motion.
+    if (!dockReduceMotion && dockHasRealCursor) {
       dock.addEventListener('mousemove', function (e) { magnifyDock(e.clientX); });
       dock.addEventListener('mouseleave', resetDockMagnify);
     }
