@@ -181,6 +181,24 @@
   var showcaseReduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var isMobileShowcase = window.matchMedia('(max-width: 860px)').matches;
   var showcaseLockMs = isMobileShowcase ? 300 : 720;
+  var showcaseCardVariants = {
+    black: {
+      src: 'assets/cards/sprout-card-black.png',
+      badge: 'BLACK EDITION',
+      alt: 'Black Sprout virtual card'
+    },
+    white: {
+      src: 'assets/cards/sprout-card-white-full.png',
+      badge: 'CLOUD EDITION',
+      alt: 'White Sprout virtual card'
+    },
+    metal: {
+      src: 'assets/cards/sprout-card-metal-full.png',
+      badge: 'METAL EDITION',
+      alt: 'Metal Sprout virtual card'
+    }
+  };
+  var activeShowcaseCard = 'black';
   var showcaseContent = [
     {
       kicker: '01 / WALLET',
@@ -201,6 +219,26 @@
       caption: 'Automatic investing · illustrative'
     }
   ];
+
+  function applyShowcaseCardColor(colorKey) {
+    if (!showcaseCardVariants[colorKey]) return;
+    activeShowcaseCard = colorKey;
+    var variant = showcaseCardVariants[colorKey];
+    showcaseScreens.forEach(function (screen) {
+      var img = screen.querySelector('.product-card-image img');
+      var badge = screen.querySelector('.image-card-badge');
+      if (img) {
+        img.src = variant.src;
+        img.alt = variant.alt;
+      }
+      if (badge) badge.textContent = variant.badge;
+    });
+    showcaseColorBtns.forEach(function (btn) {
+      var isActive = btn.dataset.card === colorKey;
+      btn.classList.toggle('is-active', isActive);
+      btn.setAttribute('aria-current', String(isActive));
+    });
+  }
 
   function showShowcaseSlide(index, direction) {
     if (!showcaseScreens.length) return;
@@ -241,12 +279,6 @@
     showcaseDescription.textContent = content.description;
     showcaseCaption.textContent = content.caption;
 
-    showcaseColorBtns.forEach(function (btn) {
-      var isActive = +btn.dataset.slide === activeShowcaseSlide;
-      btn.classList.toggle('is-active', isActive);
-      btn.setAttribute('aria-current', String(isActive));
-    });
-
     if ((wrapsForward || wrapsBackward) && !showcaseReduceMotion && !isMobileShowcase) {
       var enteringClass = wrapsForward ? 'is-entering-next' : 'is-entering-prev';
       window.requestAnimationFrame(function () {
@@ -282,11 +314,11 @@
 
   if (showcaseStage && showcaseScreens.length) {
     showShowcaseSlide(0, 0);
+    applyShowcaseCardColor(activeShowcaseCard);
     startShowcaseAuto();
     showcaseColorBtns.forEach(function (btn) {
       btn.addEventListener('click', function () {
-        var target = +btn.dataset.slide;
-        showShowcaseSlide(target, target - activeShowcaseSlide);
+        applyShowcaseCardColor(btn.dataset.card);
         pauseShowcaseAutoThenResume();
       });
     });
