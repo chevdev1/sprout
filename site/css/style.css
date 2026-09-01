@@ -1152,6 +1152,94 @@ input[type="range"]::-moz-range-thumb{
 .fees-row .value.free{color:var(--sprout-deep);}
 @media (max-width:560px){.fees-row{grid-template-columns:1fr;text-align:left;}.fees-row .value{text-align:left;}}
 
+/* summary strip — the one-line takeaway, so nobody has to read the whole
+   table to get the point. Same accent-panel language as docs.html's note. */
+.fees-summary{
+  display:flex;align-items:center;gap:12px;
+  margin-bottom:16px;padding:14px 18px;border-radius:14px;
+  background:rgba(216,255,77,.08);border:1px solid rgba(143,179,0,.22);
+}
+.fees-summary-icon{
+  display:grid;place-items:center;flex-shrink:0;
+  width:26px;height:26px;border-radius:50%;
+  background:var(--sprout);color:var(--ink);
+}
+.fees-summary-icon svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.2;}
+.fees-summary p{font-size:14.5px;color:var(--bark);}
+.fees-summary b{color:var(--sprout-deep);font-weight:700;}
+
+/* the "detailed" row: icon column, badge-style free values, a heavier
+   spend-fee row (the one line users actually decide on), and a hover/tap
+   micro-interaction — all layered on top of the base .fees-row so
+   docs.html's plain reuse of the same classes is untouched. */
+.fees-table-detailed .fees-row{
+  grid-template-columns:36px 1fr auto;gap:16px;padding:18px 28px;
+  transition:background var(--motion-fast) var(--ease-in-out-quart), transform var(--motion-fast) var(--ease-spring);
+}
+.fees-table-detailed .fees-row.head{grid-template-columns:1fr auto;padding:14px 28px;}
+.fees-icon{
+  width:36px;height:36px;border-radius:10px;background:var(--paper-dim);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  transition:background var(--motion-base) var(--ease-in-out-quart);
+}
+.fees-icon svg{width:18px;height:18px;fill:none;stroke:var(--bark);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;transition:stroke var(--motion-base) var(--ease-in-out-quart);}
+.fees-table-detailed .value.free{
+  display:inline-block;padding:4px 10px;border-radius:999px;
+  background:rgba(216,255,77,.14);color:var(--sprout-deep);font-size:13px;
+}
+.fees-table-detailed .fees-row.emphasis{
+  padding-top:24px;padding-bottom:24px;
+  background:rgba(216,255,77,.05);
+  box-shadow:inset 3px 0 0 var(--sprout);
+}
+.fees-table-detailed .fees-row.emphasis .name{font-size:16.5px;font-weight:600;}
+.fees-table-detailed .fees-row.emphasis .value{font-size:19px;}
+.fees-table-detailed .fees-row.emphasis .fees-icon{background:rgba(216,255,77,.16);}
+.fees-table-detailed .fees-row.emphasis .fees-icon svg{stroke:var(--sprout-deep);}
+
+/* touch feedback — press response, not a stuck hover (same reasoning as
+   the feature cards: nothing here is a link, so a momentary press reads
+   more honest than faking a hover state on tap) */
+.fees-table-detailed .fees-row:not(.head):active{background:var(--bg);transform:translateX(2px);}
+@media (hover:hover) and (pointer:fine){
+  .fees-table-detailed .fees-row:not(.head):hover{background:var(--bg);transform:translateX(4px);}
+  .fees-table-detailed .fees-row:not(.head):hover .fees-icon{background:rgba(216,255,77,.16);}
+  .fees-table-detailed .fees-row:not(.head):hover .fees-icon svg{stroke:var(--sprout-deep);}
+}
+
+/* staggered reveal — the container's own [data-reveal] motion is
+   neutralized (rows do the animating, not the box around them), each
+   row fades/lifts in on the same tokens as the rest of the site with a
+   top-to-bottom delay off --motion-stagger. */
+.fees-table-detailed[data-reveal]{opacity:1;transform:none;transition:none;}
+.fees-table-detailed .fees-row{
+  opacity:0;transform:translateY(14px);
+  transition:
+    opacity var(--motion-slow) var(--ease-out-expo),
+    transform var(--motion-slow) var(--ease-out-expo),
+    background var(--motion-fast) var(--ease-in-out-quart),
+    box-shadow var(--motion-fast) var(--ease-in-out-quart);
+}
+.fees-table-detailed.is-visible .fees-row{opacity:1;transform:translateY(0);}
+.fees-table-detailed .fees-row:nth-child(1){transition-delay:0ms;}
+.fees-table-detailed .fees-row:nth-child(2){transition-delay:calc(var(--motion-stagger) * 1);}
+.fees-table-detailed .fees-row:nth-child(3){transition-delay:calc(var(--motion-stagger) * 2);}
+.fees-table-detailed .fees-row:nth-child(4){transition-delay:calc(var(--motion-stagger) * 3);}
+.fees-table-detailed .fees-row:nth-child(5){transition-delay:calc(var(--motion-stagger) * 4);}
+.fees-table-detailed .fees-row:nth-child(6){transition-delay:calc(var(--motion-stagger) * 5);}
+.fees-table-detailed .fees-row:nth-child(7){transition-delay:calc(var(--motion-stagger) * 6);}
+@media (prefers-reduced-motion:reduce){
+  .fees-table-detailed .fees-row{transition-delay:0s !important;transition-duration:var(--motion-instant) !important;transform:none !important;}
+}
+
+@media (max-width:640px){
+  .fees-table-detailed .fees-row{grid-template-columns:32px 1fr;grid-template-areas:"icon name" "icon value";row-gap:2px;}
+  .fees-table-detailed .fees-row.head{grid-template-columns:1fr auto;grid-template-areas:none;}
+  .fees-table-detailed .fees-icon{grid-area:icon;width:32px;height:32px;align-self:start;}
+  .fees-table-detailed .fees-row>div:nth-child(2){grid-area:name;}
+  .fees-table-detailed .fees-row .value{grid-area:value;text-align:left;margin-top:2px;}
+}
+
 /* ---------- faq ---------- */
 .faq-list{border-top:1px solid var(--line);}
 .faq-item{border-bottom:1px solid var(--line);}
