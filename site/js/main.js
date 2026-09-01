@@ -158,7 +158,7 @@
 
   /* ---------- product showcase carousel ---------- */
   var showcaseStage = document.getElementById('showcaseStage');
-  var showcaseScreens = document.querySelectorAll('[data-screen]');
+  var showcaseScreens = document.querySelectorAll('.showcase-card-slide[data-screen]');
   var showcaseDots = document.querySelectorAll('.showcase-dot');
   var showcasePrev = document.getElementById('showcasePrev');
   var showcaseNext = document.getElementById('showcaseNext');
@@ -317,9 +317,14 @@
     applyShowcaseCardColor(activeShowcaseCard);
     startShowcaseAuto();
     showcaseColorBtns.forEach(function (btn) {
-      btn.addEventListener('click', function () {
+      btn.addEventListener('click', function (event) {
+        event.preventDefault();
+        event.stopPropagation();
         applyShowcaseCardColor(btn.dataset.card);
         pauseShowcaseAutoThenResume();
+      });
+      btn.addEventListener('pointerdown', function (event) {
+        event.stopPropagation();
       });
     });
     showcasePrev.addEventListener('click', function () {
