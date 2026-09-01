@@ -79,6 +79,54 @@
     });
   }
 
+  /* ---------- smooth scroll (Lenis) ---------- */
+  // Native `scroll-behavior: smooth` is at the mercy of the OS-level
+  // animation setting (Chromium maps "reduce motion" straight onto it),
+  // which silently turned every anchor click into a hard jump. Lenis runs
+  // its own rAF-driven easing instead, so it isn't gated by that signal.
+  //
+  // Continuous wheel-scroll smoothing IS the kind of ambient motion
+  // prefers-reduced-motion exists to suppress, so that part stays off for
+  // reduced-motion users — wheel/trackpad scrolling stays native/instant.
+  // A nav click is a single, deliberate action though, so it still gets a
+  // short eased scrollTo rather than a raw teleport.
+  var lenis = null;
+  if (window.Lenis) {
+    lenis = new window.Lenis({
+      duration: reduceMotionQuery.matches ? 0.4 : 1.15,
+      easing: function (t) { return t === 1 ? 1 : 1 - Math.pow(2, -10 * t); }, // expo-out, matches --ease-out-expo's character
+      smoothWheel: !reduceMotionQuery.matches,
+      wheelMultiplier: 1
+    });
+    (function raf(time) {
+      lenis.raf(time);
+      window.requestAnimationFrame(raf);
+    })();
+  }
+
+  function smoothScrollTo(target) {
+    if (!target) return;
+    if (lenis) {
+      lenis.scrollTo(target, { offset: 0 });
+    } else {
+      target.scrollIntoView({ behavior: reduceMotionQuery.matches ? 'auto' : 'smooth', block: 'start' });
+    }
+  }
+
+  // Delegate every in-page anchor (#section) through Lenis instead of
+  // relying on the browser's native hash-jump.
+  document.addEventListener('click', function (event) {
+    var link = event.target.closest('a[href^="#"]');
+    if (!link) return;
+    var id = link.getAttribute('href').slice(1);
+    if (!id) return;
+    var target = document.getElementById(id);
+    if (!target) return;
+    event.preventDefault();
+    smoothScrollTo(target);
+    window.history.pushState(null, '', '#' + id);
+  });
+
   /* ---------- nav scroll state ---------- */
   var nav = document.getElementById('nav');
   function onScroll() {
@@ -604,9 +652,7 @@
 
     dockItems.forEach(function (item) {
       item.addEventListener('click', function () {
-        var target = document.getElementById(item.dataset.target);
-        if (!target) return;
-        target.scrollIntoView({ behavior: dockReduceMotion ? 'auto' : 'smooth', block: 'start' });
+        smoothScrollTo(document.getElementById(item.dataset.target));
       });
     });
 

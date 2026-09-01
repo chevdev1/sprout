@@ -81,7 +81,11 @@
 
 *{box-sizing:border-box;margin:0;padding:0;}
 
-html{scroll-behavior:smooth;}
+/* scroll-behavior stays 'auto' — Lenis (js/main.js) owns smooth scrolling
+   now, and native CSS smoothing would otherwise fight its own rAF-driven
+   scrollTo on every frame. Anchor clicks are intercepted in JS; Lenis
+   isn't available (blocked, offline CDN) falls back to scrollIntoView. */
+html{scroll-behavior:auto;}
 
 body{
   background:var(--bg);
