@@ -1816,6 +1816,7 @@ footer{padding:56px 0 40px;}
 .dock{
   position:fixed;left:50%;bottom:22px;z-index:90;
   display:flex;align-items:flex-end;gap:4px;
+  max-width:calc(100vw - 24px);overflow-x:auto;-webkit-overflow-scrolling:touch;
   padding:10px 12px;border-radius:20px;
   background:rgba(13,17,12,.5);
   backdrop-filter:blur(18px) saturate(180%);
@@ -1856,7 +1857,11 @@ footer{padding:56px 0 40px;}
   transition:opacity var(--motion-fast) var(--ease-out-expo), transform var(--motion-fast) var(--ease-out-expo);
 }
 .dock-item:hover .dock-tooltip,.dock-item:focus-visible .dock-tooltip{opacity:1;transform:translate(-50%,0);}
-@media (max-width:640px){.dock{display:none;}}
+@media (max-width:480px){
+  .dock{gap:2px;padding:8px;bottom:calc(14px + env(safe-area-inset-bottom, 0px));}
+  .dock-icon{width:18px;height:18px;} /* dock-item itself stays 44x44 — touch target floor */
+  .dock-tooltip{display:none;} /* no hover on touch — just noise */
+}
 @media (prefers-reduced-motion:reduce){
   .dock,.dock-item,.dock-tooltip{transition-duration:var(--motion-instant) !important;}
 }

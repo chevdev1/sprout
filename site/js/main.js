@@ -662,9 +662,9 @@
       });
     }
 
-    window.addEventListener('scroll', function () {
-      dock.classList.toggle('is-visible', window.scrollY > window.innerHeight * 0.5);
-    }, { passive: true });
+    // Visible from the start (including on the hero) — it's the site's
+    // persistent quick-nav, not a scroll-triggered reveal.
+    dock.classList.add('is-visible');
 
     if ('IntersectionObserver' in window && dockSections.length) {
       var dockObserver = new IntersectionObserver(function (entries) {
