@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>
+(function () {
+  try {
+    var saved = localStorage.getItem('sprout-theme');
+    if (saved === 'dark' || saved === 'light') document.documentElement.dataset.theme = saved;
+  } catch (e) {}
+})();
+</script>
+<title>Docs — Sprout</title>
+<meta name="description" content="How Sprout works: funding, spending, grow-back mechanics, fees, security and supported assets on Robinhood Chain.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Instrument+Sans:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- NAV -->
+<header class="nav" id="nav">
+  <div class="wrap nav-inner">
+    <a href="index.html#top" class="nav-brand display">
+      <svg viewBox="0 0 100 100"><path d="M50 88 C22 84 8 46 30 14 C40 36 46 62 50 88 Z M50 88 C78 84 92 46 70 14 C60 36 54 62 50 88 Z"/></svg>
+      sprout
+    </a>
+    <nav class="nav-links" id="primaryNav">
+      <a href="index.html#where-it-works">Where it works</a>
+      <a href="index.html#how">How it works</a>
+      <a href="index.html#calculator">Grow-back</a>
+      <a href="index.html#features">Features</a>
+      <a href="index.html#fees">Fees</a>
+      <a href="docs.html" aria-current="page">Docs</a>
+    </nav>
+    <div class="nav-actions">
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch to dark mode" aria-pressed="false">
+        <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M4.2 4.2l1.8 1.8M18 18l1.8 1.8M2.5 12h2.5M19 12h2.5M4.2 19.8L6 18M18 6l1.8-1.8"/></svg>
+        <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a6.8 6.8 0 0 0 11 11Z"/></svg>
+      </button>
+      <button class="nav-toggle" id="navToggle" type="button" aria-expanded="false" aria-controls="primaryNav" aria-label="Open navigation">
+        <span></span><span></span>
+      </button>
+      <a href="index.html#waitlist" class="nav-cta">Get early access</a>
+    </div>
+  </div>
+</header>
+
+<!-- DOCS HEADER -->
+<section class="docs-hero">
+  <div class="wrap">
+    <span class="eyebrow"><span class="dot"></span>Documentation</span>
+    <h1 class="display">How Sprout works.</h1>
+    <p class="docs-hero-sub">Funding, spending, grow-back mechanics, fees and security — the reference for everything on the landing page, in more detail.</p>
+  </div>
+</section>
+
+<!-- DOCS BODY -->
+<section class="docs-body">
+  <div class="wrap docs-layout">
+
+    <nav class="docs-toc" aria-label="Documentation sections">
+      <span class="docs-toc-label">On this page</span>
+      <a href="#overview">Overview</a>
+      <a href="#funding">Funding &amp; deposits</a>
+      <a href="#spending">Spending</a>
+      <a href="#grow-back">Grow-back mechanics</a>
+      <a href="#assets">Supported assets</a>
+      <a href="#fees">Fees</a>
+      <a href="#security">Security &amp; custody</a>
+      <a href="#glossary">Glossary</a>
+    </nav>
+
+    <article class="docs-content">
+
+      <section id="overview" data-reveal>
+        <span class="docs-tag">01</span>
+        <h2>Overview</h2>
+        <p>Sprout is a prepaid card for spending ETH, USDG and tokenized stocks settled on Robinhood Chain. It behaves like any other card at checkout — the difference is what happens after: a percentage of every purchase, set by you, automatically routes into a stock, ETF or RWA token. You spend the way you already do; grow-back happens in the background.</p>
+        <p>This page documents the mechanics behind the product tour on the <a href="index.html">landing page</a> — read it alongside the interactive <a href="index.html#calculator">grow-back calculator</a> and <a href="index.html#how">how-it-works walkthrough</a>.</p>
+      </section>
+
+      <section id="funding" data-reveal>
+        <span class="docs-tag">02</span>
+        <h2>Funding &amp; deposits</h2>
+        <p>Connect a wallet or bridge supported assets onto Robinhood Chain to fund your card balance. Sprout is strictly prepaid: you can only spend what's funded, so there's no overdraft, no debt and no interest to track.</p>
+        <ul class="docs-list">
+          <li>Deposits settle on-chain — balances reflect once the transaction finalizes on Robinhood Chain.</li>
+          <li>You can top up at any time from the dashboard; there's no minimum funding amount beyond covering a purchase.</li>
+          <li>Unspent balance stays in the asset it was funded in until spent or reallocated.</li>
+        </ul>
+      </section>
+
+      <section id="spending" data-reveal>
+        <span class="docs-tag">03</span>
+        <h2>Spending</h2>
+        <p>The card works anywhere Visa is accepted, in-store or online, plus Apple Pay and Google Pay for tap-to-pay. At checkout, authorization is instant; the underlying conversion and on-chain settlement (including the grow-back leg, below) finalize within seconds.</p>
+        <p>Real-time controls — freezing the card, capping spend by category, viewing balances as they move — are available from the dashboard shown in the <a href="index.html#product">product preview</a> on the landing page.</p>
+      </section>
+
+      <section id="grow-back" data-reveal>
+        <span class="docs-tag">04</span>
+        <h2>Grow-back mechanics</h2>
+        <p>Grow-back is the mechanic unique to Sprout. On every eligible purchase, a percentage you choose (0.5%–5%) is calculated off the transaction amount and routed into your selected ticker — a stock, ETF or RWA token available on Robinhood Chain.</p>
+        <div class="docs-formula">
+          <span>grow-back&nbsp;=&nbsp;purchase amount&nbsp;×&nbsp;your rate</span>
+          <span class="docs-formula-example">e.g. a $42.00 purchase at a 1.5% rate routes <b>$0.63</b> into your chosen ticker</span>
+        </div>
+        <p>Grow-back conversions happen at no added spread — the fee schedule below is the complete cost structure, there's no hidden markup on the routing itself. Contributions compound over time the way any recurring investment does; see the <a href="index.html#calculator">calculator</a> for a 12-month projection based on your own spending.</p>
+        <p class="docs-note">Grow-back invests in a real asset whose value can rise or fall with the market. Sprout does not guarantee returns, and past illustrative figures on the landing page are for demonstration only.</p>
+      </section>
+
+      <section id="assets" data-reveal>
+        <span class="docs-tag">05</span>
+        <h2>Supported assets</h2>
+        <p>Card funding currently supports:</p>
+        <ul class="docs-list">
+          <li><b>ETH</b> — bridged onto Robinhood Chain</li>
+          <li><b>USDG</b> — the chain's native stablecoin</li>
+          <li><b>Tokenized stocks</b> — available on Robinhood Chain</li>
+        </ul>
+        <p>Grow-back tickers draw from the same catalog of tokenized equities, ETFs and RWA tokens; you can change your selected ticker at any time. Past contributions stay in the asset they were purchased in — only future grow-back routes to a newly selected ticker.</p>
+      </section>
+
+      <section id="fees" data-reveal>
+        <span class="docs-tag">06</span>
+        <h2>Fees</h2>
+        <div class="fees-table docs-fees-table">
+          <div class="fees-row head"><span>Item</span><span style="text-align:right">Cost</span></div>
+          <div class="fees-row"><div><div class="name">Card issuance</div><div class="desc">Virtual card, instant</div></div><div class="value free">Free</div></div>
+          <div class="fees-row"><div><div class="name">Physical card</div><div class="desc">One-time, shipped</div></div><div class="value">$15</div></div>
+          <div class="fees-row"><div><div class="name">Spend fee</div><div class="desc">Per transaction, flat</div></div><div class="value">1.0%</div></div>
+          <div class="fees-row"><div><div class="name">Grow-back conversion</div><div class="desc">Routing cashback into your ticker</div></div><div class="value free">No spread</div></div>
+          <div class="fees-row"><div><div class="name">Monthly balance fee</div><div class="desc">On funded balance under $50</div></div><div class="value">$50 min</div></div>
+          <div class="fees-row"><div><div class="name">ATM withdrawal</div><div class="desc">Standard network</div></div><div class="value">$2 + 1%</div></div>
+        </div>
+      </section>
+
+      <section id="security" data-reveal>
+        <span class="docs-tag">07</span>
+        <h2>Security &amp; custody</h2>
+        <p>Sprout is not a bank. It's a prepaid card backed by assets you hold on Robinhood Chain — there's no lending, no deposits held on a Sprout balance sheet, and no FDIC coverage. Every transaction, including the grow-back leg, settles on-chain and is auditable.</p>
+        <p>Because the card is strictly prepaid, there's no overdraft exposure: you can only ever spend what's funded.</p>
+      </section>
+
+      <section id="glossary" data-reveal>
+        <span class="docs-tag">08</span>
+        <h2>Glossary</h2>
+        <dl class="docs-glossary">
+          <div><dt>Robinhood Chain</dt><dd>The chain Sprout settles transactions and grow-back conversions on.</dd></div>
+          <div><dt>USDG</dt><dd>A stablecoin native to Robinhood Chain, usable to fund your card balance.</dd></div>
+          <div><dt>RWA token</dt><dd>A "real-world asset" token — a tokenized representation of a stock, ETF or similar instrument, tradable on-chain.</dd></div>
+          <div><dt>Grow-back rate</dt><dd>The percentage (0.5%–5%) of each purchase you choose to route into your selected ticker.</dd></div>
+          <div><dt>Grow-back ticker</dt><dd>The specific stock, ETF or RWA token your grow-back contributions are invested into.</dd></div>
+        </dl>
+      </section>
+
+      <div class="docs-footer-cta" data-reveal>
+        <p>More questions?</p>
+        <div class="hero-actions">
+          <a href="index.html#faq" class="btn btn-ghost on-ink">See the FAQ</a>
+          <a href="index.html#waitlist" class="btn btn-primary">Get your card</a>
+        </div>
+      </div>
+
+    </article>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="footer-inner">
+      <a href="index.html#top" class="footer-brand display">
+        <svg viewBox="0 0 100 100"><path d="M50 88 C22 84 8 46 30 14 C40 36 46 62 50 88 Z M50 88 C78 84 92 46 70 14 C60 36 54 62 50 88 Z"/></svg>
+        sprout
+      </a>
+      <div class="footer-links">
+        <a href="index.html#where-it-works">Where it works</a>
+        <a href="index.html#how">How it works</a>
+        <a href="index.html#features">Features</a>
+        <a href="index.html#fees">Fees</a>
+        <a href="index.html#faq">FAQ</a>
+        <a href="docs.html">Docs</a>
+        <a href="https://x.com/sproutcash" target="_blank" rel="noopener">X / Twitter</a>
+      </div>
+    </div>
+    <div class="footer-legal">
+      Concept preview only. Sprout is not a bank. Card issuance, custody, asset support, fees and availability are subject to final issuer terms. Grow-back assets can rise or fall in value and are not guaranteed. © 2026 Sprout.
+    </div>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>
