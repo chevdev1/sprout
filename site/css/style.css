@@ -645,13 +645,13 @@ ul{list-style:none;}
 }
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto;}
-  /* Still fades in on reveal — just drops the vertical travel (the
-     parallax-y part reduced-motion exists to suppress) and shortens the
-     duration, rather than skipping the transition outright. The old
-     transition:none made the whole page pop in instantly with zero
-     motion, which reads as "the site is just broken/static", not as a
-     deliberate accessibility choice. */
-  [data-reveal]{transform:none;transition:opacity var(--motion-instant) linear;}
+  /* Still fades in on reveal — a shorter/smaller version, not zero.
+     transition:none used to make the whole page pop in instantly, which
+     read as "the site is broken/static" rather than a deliberate
+     accessibility choice. Short of the full effect, but long/visible
+     enough (300ms, a little travel) to actually register as motion. */
+  [data-reveal]{transform:translateY(6px);transition:opacity 300ms linear, transform 300ms linear;}
+  [data-reveal].is-visible{transform:translateY(0);}
   .marquee-track{animation:none;}
   .showcase-phone,.app-screen,.showcase-arrow,.showcase-dot,.showcase-toast{transition:none;animation:none;}
   .showcase-phone.is-changing{transform:rotate(5deg);}

@@ -135,11 +135,13 @@
           io.unobserve(entry.target);
         }
       });
-    // Positive bottom margin extends the trigger zone *below* the actual
-    // viewport, so a section starts revealing shortly before it visually
-    // scrolls into view rather than after — the negative margin this used
-    // to have did the opposite (shrinks the zone, delays the trigger).
-    }, { threshold: 0.05, rootMargin: '0px 0px 120px 0px' });
+    // A 120px lead-in was enough that the whole (short) transition could
+    // finish before the section was actually visible on a normal scroll,
+    // so nothing appeared to animate — it just showed up "already done".
+    // A small negative margin instead: the section has to be a little
+    // way into the viewport before triggering, so there's still real
+    // travel left on screen for the eye to actually catch.
+    }, { threshold: 0.15, rootMargin: '0px 0px -8% 0px' });
     revealEls.forEach(function (el) { io.observe(el); });
   } else {
     revealEls.forEach(function (el) { el.classList.add('is-visible'); });
