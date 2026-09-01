@@ -1991,29 +1991,17 @@ footer{padding:56px 0 40px;}
    a layout meant to be read top-to-bottom got crammed sideways on any
    tablet or landscape phone between 560–860px. */
 @media (max-width:860px){
-  /* display:flex (not grid) here on purpose: a CSS Grid item's sticky
-     "travel range" is capped by its own grid row, which auto-sizes to
-     that item's own content — so .how-visual, in its own row, would
-     have nowhere to travel and just sit static despite position:sticky.
-     Plain block/flex stacking lets it stick across the combined height
-     of itself + the taller .steps list below it, the same way a classic
-     sticky-sidebar-next-to-taller-content layout works. */
-  .how-layout{display:flex;flex-direction:column;gap:28px;}
-  .how-visual{
-    position:sticky;top:88px;z-index:2;
-    /* trimmed from the old min(56vh,420px) — that was sized for a
-       block you scroll past once; pinned for the whole section, it
-       shouldn't eat more than ~40% of the screen while someone reads.
-       Not shrunk further than this: the card art + amount chips inside
-       are positioned at fixed offsets tuned for roughly this height. */
-    height:min(44vh,340px);
-  }
-  /* the card art + amount chips were positioned for the old ~420-540px
-     box; rescaled so they don't overlap in the new ~340px one */
-  .how-card-stack{top:48px;width:min(66%,300px);}
-  .how-flow{bottom:56px;}
+  /* Reverted a sticky-card attempt here: it hit a WebKit rendering bug
+     on real iOS Safari — a position:sticky element combined with
+     overflow:hidden + isolation:isolate would sometimes fail to paint
+     its contents on first layout (a known class of Safari compositing
+     bug), leaving a blank gap where the card should be until a scroll
+     forced a repaint. Reliable > clever here — back to the simple
+     scroll-past block that was actually working. */
+  .how-layout{grid-template-columns:1fr;gap:34px;}
+  .how-visual{position:relative;top:auto;height:min(56vh,420px);}
   .how-rail{display:none;}
-  .how-layout .steps{display:flex;flex-direction:column;position:relative;z-index:1;background:var(--bg);}
+  .how-layout .steps{display:flex;flex-direction:column;}
   .how-layout .step-card{
     display:block;
     min-height:44px; /* comfortable tap target for the click-to-select stage cards */
@@ -2024,21 +2012,17 @@ footer{padding:56px 0 40px;}
   .how-layout .step-card p{max-width:44ch;}
 }
 @media (max-width:560px){
-  .how-visual{height:min(38vh,300px);border-radius:22px;}
+  .how-visual{height:min(48vh,340px);border-radius:22px;}
   .how-visual-top,.how-visual-bottom{right:18px;left:18px;}
-  .how-card-stack{top:40px;width:min(64%,260px);}
-  .how-flow{right:18px;bottom:46px;left:18px;}
+  .how-card-stack{top:89px;width:94%;}
+  .how-flow{right:18px;bottom:55px;left:18px;}
   .how-flow span{padding:9px;font-size:14px;}
   .how-layout .step-card{padding:0 0 26px;}
 }
-/* short viewports (phones in landscape) — a sticky element pinned for
-   the whole section is worse here than the old scroll-past block ever
-   was: it would eat most of an already-short screen permanently, so
-   it drops out of the sticky treatment and just scrolls normally. */
+/* short viewports (phones in landscape) — the fixed-height demo panel
+   shouldn't eat the whole screen before the user reaches any text */
 @media (max-height:480px) and (orientation:landscape){
-  .how-visual{position:relative;top:auto;height:min(60vh,220px);}
-  .how-card-stack{top:30px;width:min(58%,178px);}
-  .how-flow{bottom:36px;}
+  .how-visual{height:min(70vh,260px);}
 }
 @media (prefers-reduced-motion:reduce){
   .how-card,.how-flow,.how-visual-glow,.how-rail-fill,
