@@ -104,10 +104,16 @@
     })();
   }
 
+  function navOffset() {
+    // Sticky header is a constant 72px at every breakpoint (see .nav-inner),
+    // plus a little breathing room so headings don't land flush under it.
+    return -(72 + 16);
+  }
+
   function smoothScrollTo(target) {
     if (!target) return;
     if (lenis) {
-      lenis.scrollTo(target, { offset: 0 });
+      lenis.scrollTo(target, { offset: navOffset() });
     } else {
       target.scrollIntoView({ behavior: reduceMotionQuery.matches ? 'auto' : 'smooth', block: 'start' });
     }
@@ -146,7 +152,11 @@
           io.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    // Positive bottom margin extends the trigger zone *below* the actual
+    // viewport, so a section starts revealing shortly before it visually
+    // scrolls into view rather than after — the negative margin this used
+    // to have did the opposite (shrinks the zone, delays the trigger).
+    }, { threshold: 0.05, rootMargin: '0px 0px 120px 0px' });
     revealEls.forEach(function (el) { io.observe(el); });
   } else {
     revealEls.forEach(function (el) { el.classList.add('is-visible'); });
