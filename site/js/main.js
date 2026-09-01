@@ -135,13 +135,9 @@
           io.unobserve(entry.target);
         }
       });
-    // A 120px lead-in was enough that the whole (short) transition could
-    // finish before the section was actually visible on a normal scroll,
-    // so nothing appeared to animate — it just showed up "already done".
-    // A small negative margin instead: the section has to be a little
-    // way into the viewport before triggering, so there's still real
-    // travel left on screen for the eye to actually catch.
-    }, { threshold: 0.15, rootMargin: '0px 0px -8% 0px' });
+    // Mobile viewports are short, so -8% of one (~50-60px) still left
+    // the trigger too close to the bottom edge — pulled it in further.
+    }, { threshold: 0.2, rootMargin: '0px 0px -18% 0px' });
     revealEls.forEach(function (el) { io.observe(el); });
   } else {
     revealEls.forEach(function (el) { el.classList.add('is-visible'); });

@@ -81,7 +81,7 @@ import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
     var cy = rect.top + rect.height / 2;
     var nx = clamp((event.clientX - cx) / (window.innerWidth * 0.5), -1, 1);
     var ny = clamp((event.clientY - cy) / (window.innerHeight * 0.5), -1, 1);
-    var MAX_TILT = 0.085; // radians — kept small, this is a "notice it, don't be distracted by it" effect
+    var MAX_TILT = 0.13; // radians — a clearly visible tilt toward the cursor, not just a hint of one
     tilt.ty = nx * MAX_TILT;
     tilt.tx = ny * -MAX_TILT;
     pointerInsideHero = true;
@@ -364,7 +364,7 @@ import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
     bend.right.tx = Math.cos(time * 0.42 + 0.9) * 0.012;
   }
 
-  var IDLE_SPIN_SPEED = 0.0018; // rad/frame — one full turn in roughly 70s at 60fps, deliberately slow/weightless
+  var IDLE_SPIN_SPEED = 0.006; // rad/frame — one full turn in ~17s at 60fps, clearly noticeable but still smooth
 
   function animate() {
     requestAnimationFrame(animate);
