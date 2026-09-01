@@ -94,6 +94,7 @@ body{
   font-size:16px;
   line-height:1.5;
   -webkit-font-smoothing:antialiased;
+  overflow-x:hidden; /* safety net for absolutely-positioned decorative glows/auras across sections */
 }
 
 img,svg{display:block;max-width:100%;}
@@ -1769,22 +1770,38 @@ footer{padding:56px 0 40px;}
 .how-layout .step-card.grow{color:var(--bark);}
 .how-layout .step-card.grow .step-num{color:var(--mist);}
 .how-layout .step-card.grow.is-active .step-num{color:var(--sprout);}
+/* Mobile-first note: below 861px the split layout (sticky visual +
+   scrollytelling list) collapses to a single column, and the step list
+   stays single-column at every size in that range — it used to flip to a
+   2-col grid here, which is the exact "shrink instead of reflow" bug:
+   a layout meant to be read top-to-bottom got crammed sideways on any
+   tablet or landscape phone between 560–860px. */
 @media (max-width:860px){
   .how-layout{grid-template-columns:1fr;gap:34px;}
-  .how-visual{position:relative;top:auto;height:480px;}
-  .how-layout .steps{display:grid;grid-template-columns:1fr 1fr;}
+  .how-visual{position:relative;top:auto;height:min(56vh,420px);}
   .how-rail{display:none;}
-  .how-layout .step-card{display:block;min-height:170px;padding:0 20px 28px 0;}
-  .how-layout .step-num{margin-bottom:17px;}
+  .how-layout .steps{display:flex;flex-direction:column;}
+  .how-layout .step-card{
+    display:block;
+    min-height:44px; /* comfortable tap target for the click-to-select stage cards */
+    padding:0 0 28px;
+  }
+  .how-layout .step-num{margin-bottom:14px;}
+  .how-layout .step-card h3{font-size:clamp(20px,5vw,26px);line-height:1.18;max-width:none;}
+  .how-layout .step-card p{max-width:44ch;}
 }
 @media (max-width:560px){
-  .how-visual{height:390px;border-radius:22px;}
+  .how-visual{height:min(48vh,340px);border-radius:22px;}
   .how-visual-top,.how-visual-bottom{right:18px;left:18px;}
   .how-card-stack{top:89px;width:94%;}
   .how-flow{right:18px;bottom:55px;left:18px;}
   .how-flow span{padding:9px;font-size:14px;}
-  .how-layout .steps{display:flex;}
-  .how-layout .step-card{min-height:0;padding:0 0 30px;}
+  .how-layout .step-card{padding:0 0 26px;}
+}
+/* short viewports (phones in landscape) — the fixed-height demo panel
+   shouldn't eat the whole screen before the user reaches any text */
+@media (max-height:480px) and (orientation:landscape){
+  .how-visual{height:min(70vh,260px);}
 }
 @media (prefers-reduced-motion:reduce){
   .how-card,.how-flow,.how-visual-glow,.how-rail-fill,
