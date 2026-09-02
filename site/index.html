@@ -21,6 +21,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Instrument+Sans:wght@500;600&display=swap" rel="stylesheet">
+<!-- Warms the connection for the three.js module (fetched later, near end
+     of body) without forcing an early fetch — the actual model/texture
+     assets are deliberately deferred via requestIdleCallback in
+     sprout-3d.js so they never compete with this page's own paint. -->
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>

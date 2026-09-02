@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 (function initHeroSprout3D() {
   var container = document.getElementById('heroSprout');
@@ -491,11 +491,15 @@ import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
   var modelPath = 'assets/sprout-model/';
 
   function loadModel() {
+    // .webp re-encodes of the original .png maps — diffuse is lossy
+    // (q88, imperceptible: <1/255 mean channel diff, spot-checked),
+    // normal/roughness/metallic are lossless WebP (same pixels, smaller
+    // container). Cuts this Promise.all from ~2.7MB to ~860KB.
     return Promise.all([
-      textureLoader.loadAsync(modelPath + 'texture_diffuse.png'),
-      textureLoader.loadAsync(modelPath + 'texture_normal.png'),
-      textureLoader.loadAsync(modelPath + 'texture_roughness.png'),
-      textureLoader.loadAsync(modelPath + 'texture_metallic.png')
+      textureLoader.loadAsync(modelPath + 'texture_diffuse.webp'),
+      textureLoader.loadAsync(modelPath + 'texture_normal.webp'),
+      textureLoader.loadAsync(modelPath + 'texture_roughness.webp'),
+      textureLoader.loadAsync(modelPath + 'texture_metallic.webp')
     ]).then(function (maps) {
     maps[0].colorSpace = THREE.SRGBColorSpace;
     var maxAniso = renderer.capabilities.getMaxAnisotropy();
@@ -514,12 +518,18 @@ import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
       envMapIntensity: 0.12
     });
 
-    var objLoader = new OBJLoader();
+    // sprout.glb is a decimated (12k-face), binary-encoded export of the
+    // same base.obj mesh (see scripts/build-sprout-glb.py) — 222KB vs
+    // the source .obj's 10MB text file. computeVertexWeights() below
+    // derives its bend weights purely from each vertex's normalized
+    // position in the bounding box, not fixed indices/count, so it
+    // works unchanged on the decimated geometry.
+    var gltfLoader = new GLTFLoader();
     return new Promise(function (resolve, reject) {
-      objLoader.load(modelPath + 'base.obj', resolve, undefined, reject);
-    }).then(function (object) {
+      gltfLoader.load(modelPath + 'sprout.glb', resolve, undefined, reject);
+    }).then(function (gltf) {
       var sourceMesh = null;
-      object.traverse(function (child) {
+      gltf.scene.traverse(function (child) {
         if (child.isMesh && !sourceMesh) sourceMesh = child;
       });
       if (!sourceMesh) throw new Error('Sprout mesh not found');
