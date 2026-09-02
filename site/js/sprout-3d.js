@@ -425,7 +425,11 @@ import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
     bend.right.tx = Math.cos(time * 0.38 + 0.9) * (windAmp * 0.45);
   }
 
-  var IDLE_SPIN_SPEED = isMobileView ? 0 : 0.0022;
+  // Noticeably spinning on both desktop and mobile — a teammate's perf
+  // pass zeroed this out on mobile entirely (isMobileView ? 0 : ...),
+  // which read as "the sprout doesn't move at all" on phones. Kept a
+  // modest mobile discount for GPU budget, not a full stop.
+  var IDLE_SPIN_SPEED = isMobileView ? 0.0045 : 0.006;
 
   function animate() {
     requestAnimationFrame(animate);
