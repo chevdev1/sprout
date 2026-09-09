@@ -33,7 +33,7 @@ export default function ApplyPage() {
     <div className="min-h-dvh flex items-center justify-center relative overflow-hidden bg-bg p-6">
       <div className="pointer-events-none absolute -top-40 -right-30 w-140 h-140 rounded-full bg-[radial-gradient(circle,var(--glow-a),transparent_70%)]" />
 
-      <div className="w-full max-w-md bg-surface border border-(--line) rounded-lg p-8 relative z-10">
+      <div className="w-full max-w-md bg-surface border border-(--line) rounded-lg p-8 relative z-10 [animation:fade-up_var(--dur-enter)_var(--ease-out)_backwards]">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-2">
             <SproutLogo size={22} className="text-sprout" />

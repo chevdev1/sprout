@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type CSSProperties } from "react";
-import { useAccount } from "wagmi";
+import { useAccount, useDisconnect } from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { Sidebar } from "@/components/Sidebar";
 import { DashboardHeader } from "@/components/DashboardHeader";
@@ -40,6 +40,7 @@ function Toggle({
 
 export default function SettingsPage() {
   const { address, isConnected } = useAccount();
+  const { disconnect } = useDisconnect();
   const { openConnectModal } = useConnectModal();
   const [notifications, setNotifications] = useState({
     growBack: true,
@@ -149,33 +150,35 @@ export default function SettingsPage() {
                 className="stagger-card bg-surface border border-(--line) rounded-lg p-6.5"
                 style={stagger(2)}
               >
-                <div className="font-display text-[15px] mb-1">Active sessions</div>
+                <div className="font-display text-[15px] mb-1">Active session</div>
                 <p className="text-xs text-text-dim mb-4.5">
-                  Signed in via Sign-In with Ethereum.
+                  Multi-device session history ships with wallet sign-in
+                  (SIWE) — not built yet, see the roadmap.
                 </p>
 
-                <div className="py-3.5 border-t border-(--line)">
-                  <div className="flex justify-between items-center gap-2">
-                    <span className="text-[13px] truncate">Chrome · macOS</span>
-                    <span className="shrink-0 text-[10.5px] font-semibold text-sprout-deep bg-sprout/10 px-2.25 py-1 rounded-full">
-                      This device
-                    </span>
-                  </div>
-                  <div className="text-[11.5px] text-text-dim mt-1">Active now</div>
-                </div>
-                <div className="py-3.5 border-t border-(--line)">
-                  <div className="flex justify-between items-center">
-                    <span className="text-[13px]">Safari · iOS</span>
-                    <button className="min-h-11 -my-2.5 px-2 text-[12.5px] text-text-dim hover:text-text active:scale-[0.97] transition-[color,transform] duration-[var(--dur-hover)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-sprout focus-visible:outline-offset-2 rounded-sm">
-                      Revoke
+                {isConnected ? (
+                  <>
+                    <div className="py-3.5 border-t border-(--line)">
+                      <div className="flex justify-between items-center gap-2">
+                        <span className="text-[13px] truncate">This device</span>
+                        <span className="shrink-0 flex items-center gap-1.5 text-[11px] text-text-dim">
+                          <span className="w-1.5 h-1.5 rounded-full bg-sprout-deep [animation:pulse-dot_2s_ease-in-out_infinite]" />
+                          Connected
+                        </span>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => disconnect()}
+                      className="min-h-11 w-full mt-4.5 px-4 rounded-md border border-(--line) text-[13px] text-text-dim hover:border-red-500/40 hover:text-red-500 active:scale-[0.97] transition-[border-color,color,transform] duration-[var(--dur-hover)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-sprout focus-visible:outline-offset-2"
+                    >
+                      Disconnect wallet
                     </button>
-                  </div>
-                  <div className="text-[11.5px] text-text-dim mt-1">2 days ago</div>
-                </div>
-
-                <button className="min-h-11 w-full mt-4.5 px-4 rounded-md border border-(--line) text-[13px] text-text-dim hover:border-red-500/40 hover:text-red-500 active:scale-[0.97] transition-[border-color,color,transform] duration-[var(--dur-hover)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-sprout focus-visible:outline-offset-2">
-                  Sign out everywhere
-                </button>
+                  </>
+                ) : (
+                  <p className="text-sm text-text-dim py-3.5 border-t border-(--line)">
+                    No active session.
+                  </p>
+                )}
               </div>
             </div>
           </div>

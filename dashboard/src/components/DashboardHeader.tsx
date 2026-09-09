@@ -12,7 +12,7 @@ export function DashboardHeader({
   cardBalance?: string;
 }) {
   return (
-    <div className="h-[72px] shrink-0 flex items-center justify-between gap-3 px-4 sm:px-8 bg-black/72 backdrop-blur-[20px] backdrop-saturate-150 border-b border-(--line) [box-shadow:inset_0_1px_0_0_rgba(255,255,255,.08)]">
+    <div className="h-[72px] shrink-0 flex items-center justify-between gap-3 px-4 sm:px-8 bg-(--glass) backdrop-blur-[20px] backdrop-saturate-150 border-b border-(--line) [box-shadow:inset_0_1px_0_0_rgba(255,255,255,.08)]">
       <div className="font-display text-[17px] truncate">{title}</div>
       <div className="flex items-center gap-2 sm:gap-3 shrink-0">
         {cardBalance ? (
