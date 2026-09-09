@@ -1,0 +1,92 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Instrument+Sans:wght@500;600&display=swap');
+  :root{
+    --bg:#0B0D09; --surface:#14170F; --ink:#0D110C; --ink-2:#171B14;
+    --text:#EDEDE2; --text-dim:#9A9C8E;
+    --sprout:#D8FF4D; --sprout-deep:#8FB300;
+    --line:rgba(255,255,255,.10);
+    --radius-lg:20px; --radius-md:14px;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;}
+  .display{font-family:'Instrument Sans',sans-serif;font-weight:600;letter-spacing:-.01em;}
+</style>
+</helmet>
+
+<div style="width:1440px;height:900px;background:var(--bg);position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;">
+  <div style="position:absolute;top:-160px;left:50%;transform:translateX(-50%);width:700px;height:700px;border-radius:50%;background:radial-gradient(circle, rgba(216,255,77,.08), transparent 70%);pointer-events:none;"></div>
+
+  <!-- minimal onboarding top bar -->
+  <div style="width:100%;height:72px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:0 32px;position:relative;z-index:1;">
+    <div style="display:flex;align-items:center;gap:8px;">
+      <svg viewBox="0 0 100 100" width="20" height="20"><path fill="var(--sprout)" d="M50 88 C22 84 8 46 30 14 C40 36 46 62 50 88 Z M50 88 C78 84 92 46 70 14 C60 36 54 62 50 88 Z"/></svg>
+      <span class="display" style="font-size:16px;">sprout</span>
+    </div>
+    <div style="width:32px;height:32px;border-radius:50%;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--text-dim);font-size:16px;">×</div>
+  </div>
+
+  <!-- stepper -->
+  <div style="display:flex;align-items:center;gap:8px;margin-top:16px;position:relative;z-index:1;">
+    <div style="width:28px;height:28px;border-radius:50%;background:var(--ink);border:1px solid var(--sprout);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--sprout);">1</div>
+    <div style="width:44px;height:1px;background:var(--sprout);"></div>
+    <div style="width:28px;height:28px;border-radius:50%;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--text-dim);">2</div>
+    <div style="width:44px;height:1px;background:var(--line);"></div>
+    <div style="width:28px;height:28px;border-radius:50%;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--text-dim);">3</div>
+    <div style="width:44px;height:1px;background:var(--line);"></div>
+    <div style="width:28px;height:28px;border-radius:50%;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--text-dim);">4</div>
+  </div>
+
+  <!-- flow card -->
+  <div style="width:600px;margin-top:32px;background:var(--ink-2);border:1px solid var(--line);border-radius:var(--radius-lg);padding:40px;position:relative;z-index:1;">
+    <div style="font-size:11px;font-weight:600;color:var(--sprout-deep);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">Step 1 of 4</div>
+    <div class="display" style="font-size:26px;letter-spacing:-.02em;margin-bottom:8px;">Choose your card, then fund it.</div>
+    <p style="font-size:14.5px;color:var(--text-dim);line-height:1.6;margin:0 0 28px;max-width:46ch;">Virtual is instant and free. Physical ships once your virtual card is active.</p>
+
+    <!-- card type choice -->
+    <div style="display:flex;gap:12px;margin-bottom:10px;">
+      <div style="flex:1;padding:18px;border-radius:var(--radius-md);border:1.5px solid var(--sprout);background:rgba(216,255,77,.06);">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+          <div class="display" style="font-size:15px;">Virtual</div>
+          <span style="font-size:10.5px;font-weight:600;color:var(--ink);background:var(--sprout);padding:3px 8px;border-radius:999px;">Free</span>
+        </div>
+        <div style="font-size:12.5px;color:var(--text-dim);margin-top:8px;">Instant · ready to use now</div>
+      </div>
+      <div style="flex:1;padding:18px;border-radius:var(--radius-md);border:1px solid var(--line);">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+          <div class="display" style="font-size:15px;color:var(--text-dim);">Physical</div>
+          <span style="font-size:10.5px;font-weight:600;color:var(--text-dim);border:1px solid var(--line);padding:3px 8px;border-radius:999px;">At cost</span>
+        </div>
+        <div style="font-size:12.5px;color:var(--text-dim);margin-top:8px;">Ships after virtual is active</div>
+      </div>
+    </div>
+    <div style="font-size:11.5px;color:var(--text-dim);margin-bottom:24px;line-height:1.5;">Availability and final card terms are set at launch.</div>
+
+    <!-- funding asset picker -->
+    <div style="font-size:12.5px;color:var(--text-dim);margin-bottom:12px;">Fund with</div>
+    <div style="display:flex;gap:8px;margin-bottom:28px;">
+      <div style="padding:9px 16px;border-radius:999px;background:var(--sprout);color:var(--ink);font-size:13px;font-weight:600;">ETH</div>
+      <div style="padding:9px 16px;border-radius:999px;border:1px solid var(--line);font-size:13px;color:var(--text-dim);">USDG</div>
+      <div style="padding:9px 16px;border-radius:999px;border:1px solid var(--line);font-size:13px;color:var(--text-dim);">Tokenized stocks</div>
+    </div>
+    <div style="padding:16px 18px;border-radius:var(--radius-md);border:1px solid var(--line);background:var(--surface);display:flex;justify-content:space-between;align-items:center;margin-bottom:32px;">
+      <span style="font-size:13px;color:var(--text-dim);">Amount</span>
+      <span class="display" style="font-size:20px;">1.20 ETH</span>
+    </div>
+
+    <div style="display:flex;justify-content:flex-end;">
+      <div style="padding:13px 28px;border-radius:999px;background:var(--sprout);color:var(--ink);font-size:14px;font-weight:600;">Continue</div>
+    </div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

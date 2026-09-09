@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Instrument+Sans:wght@500;600&display=swap');
+  :root{
+    --bg:#0B0D09; --ink:#0D110C; --ink-2:#171B14;
+    --text:#EDEDE2; --text-dim:#9A9C8E;
+    --sprout:#D8FF4D; --sprout-deep:#8FB300;
+    --line:rgba(255,255,255,.10);
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;}
+  .display{font-family:'Instrument Sans',sans-serif;font-weight:600;letter-spacing:-.01em;}
+</style>
+</helmet>
+
+<div style="width:1440px;height:900px;background:var(--bg);position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+  <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:820px;height:820px;border-radius:50%;background:radial-gradient(circle, rgba(216,255,77,.16), transparent 68%);pointer-events:none;"></div>
+
+  <div style="position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;">
+    <span style="font-size:11px;font-weight:600;color:var(--sprout-deep);text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px;">Step 4 of 4</span>
+    <div class="display" style="font-size:34px;letter-spacing:-.02em;margin-bottom:8px;">Your card is ready.</div>
+    <p style="font-size:15px;color:var(--text-dim);margin:0 0 40px;">Funded and grow-back is live. Add it to your wallet to start spending.</p>
+
+    <!-- card visual — same recipe as .mini-card on the landing page -->
+    <div style="width:400px;aspect-ratio:1.586/1;border-radius:18px;
+      background:linear-gradient(135deg, rgba(255,255,255,.06), rgba(255,255,255,.01) 55%), linear-gradient(135deg,#20241C 0%,#0D110C 75%);
+      border:1px solid var(--line);padding:24px 26px;display:flex;flex-direction:column;justify-content:space-between;
+      box-shadow:0 30px 60px -20px rgba(216,255,77,.25), 0 20px 50px -20px rgba(0,0,0,.6);margin-bottom:36px;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div style="display:flex;align-items:center;gap:7px;">
+          <svg viewBox="0 0 100 100" width="16" height="16"><path fill="var(--sprout)" d="M50 88 C22 84 8 46 30 14 C40 36 46 62 50 88 Z M50 88 C78 84 92 46 70 14 C60 36 54 62 50 88 Z"/></svg>
+          <span class="display" style="font-size:15px;">sprout</span>
+        </div>
+        <span style="font-size:10.5px;color:var(--text-dim);border:1px solid var(--line);border-radius:20px;padding:3px 9px;">Robinhood Chain</span>
+      </div>
+      <div style="color:#E4E4D8;font-size:16px;letter-spacing:2px;font-family:monospace;">•••• •••• •••• 7241</div>
+      <div style="display:flex;justify-content:space-between;font-size:10.5px;color:var(--text-dim);letter-spacing:.5px;">
+        <span>ETH · USDG · STOCKS</span><span>VIRTUAL</span>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:12px;">
+      <div style="padding:14px 30px;border-radius:999px;background:var(--sprout);color:var(--ink);font-size:14.5px;font-weight:600;">Add to Apple Wallet</div>
+      <div style="padding:14px 30px;border-radius:999px;border:1px solid var(--line);font-size:14.5px;color:var(--text);">Go to dashboard</div>
+    </div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

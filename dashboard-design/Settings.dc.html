@@ -1,0 +1,144 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Instrument+Sans:wght@500;600&display=swap');
+  :root{
+    --bg:#0B0D09; --surface:#14170F; --surface-2:#1A1E13;
+    --ink:#0D110C; --ink-2:#171B14;
+    --text:#EDEDE2; --text-dim:#9A9C8E;
+    --sprout:#D8FF4D; --sprout-deep:#8FB300;
+    --line:rgba(255,255,255,.10);
+    --radius-lg:20px; --radius-md:14px;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;}
+  a{color:inherit;text-decoration:none;}
+  .display{font-family:'Instrument Sans',sans-serif;font-weight:600;letter-spacing:-.01em;}
+</style>
+</helmet>
+
+<div style="width:1440px;height:900px;display:flex;background:var(--bg);position:relative;overflow:hidden;">
+  <div style="position:absolute;top:-160px;right:-120px;width:560px;height:560px;border-radius:50%;background:radial-gradient(circle, rgba(216,255,77,.10), transparent 70%);pointer-events:none;"></div>
+
+  <!-- SIDEBAR -->
+  <div style="width:240px;flex-shrink:0;height:900px;background:var(--surface);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:24px 16px;position:relative;z-index:1;">
+    <div style="display:flex;align-items:center;gap:8px;padding:8px 10px 28px;">
+      <svg viewBox="0 0 100 100" width="22" height="22"><path fill="var(--sprout)" d="M50 88 C22 84 8 46 30 14 C40 36 46 62 50 88 Z M50 88 C78 84 92 46 70 14 C60 36 54 62 50 88 Z"/></svg>
+      <span class="display" style="font-size:18px;">sprout</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:2px;">
+      <div style="display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:10px;color:var(--text-dim);font-size:14px;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="7" height="7" rx="1.5"/><rect x="14" y="4" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+        Overview
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:10px;color:var(--text-dim);font-size:14px;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="2.5" y="6" width="19" height="13" rx="2.2"/><path d="M2.5 10h19"/></svg>
+        Card
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:10px;color:var(--text-dim);font-size:14px;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20v-3"/></svg>
+        Grow-back
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:10px;color:var(--text-dim);font-size:14px;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17l6-6-6-6"/><path d="M12 19h8"/></svg>
+        Activity
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:10px;background:rgba(216,255,77,.10);color:var(--sprout);font-size:14px;font-weight:500;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.9 2.9l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.9-2.9l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.9-2.9l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.9 2.9l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+        Settings
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div style="flex:1;height:900px;overflow:hidden;position:relative;z-index:1;display:flex;flex-direction:column;">
+    <div style="height:72px;flex-shrink:0;display:flex;align-items:center;padding:0 32px;background:rgba(11,13,9,.72);backdrop-filter:blur(20px) saturate(150%);border-bottom:1px solid var(--line);box-shadow:inset 0 1px 0 0 rgba(255,255,255,.08);">
+      <div class="display" style="font-size:17px;">Settings</div>
+    </div>
+
+    <div style="flex:1;padding:32px 40px;display:flex;gap:28px;max-width:1100px;">
+      <div style="flex:1;display:flex;flex-direction:column;gap:20px;">
+
+        <!-- connected wallets -->
+        <div style="background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:24px 26px;">
+          <div class="display" style="font-size:15px;margin-bottom:4px;">Connected wallets</div>
+          <div style="font-size:12.5px;color:var(--text-dim);margin-bottom:18px;">Sign in and fund your card from any of these.</div>
+
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-top:1px solid var(--line);">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <span style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--sprout),#6b8f00);"></span>
+              <div>
+                <div style="font-size:13.5px;font-family:monospace;">0x4a2f…9F2c</div>
+                <div style="font-size:11.5px;color:var(--text-dim);margin-top:2px;">Primary · connected</div>
+              </div>
+            </div>
+            <span style="font-size:10.5px;font-weight:600;color:var(--sprout);background:rgba(216,255,77,.10);padding:4px 10px;border-radius:999px;">Primary</span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-top:1px solid var(--line);">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <span style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#4a5a3a,#171B14);"></span>
+              <div>
+                <div style="font-size:13.5px;font-family:monospace;">0x9c11…7Ab4</div>
+                <div style="font-size:11.5px;color:var(--text-dim);margin-top:2px;">Secondary</div>
+              </div>
+            </div>
+            <span style="font-size:12.5px;color:var(--text-dim);">Remove</span>
+          </div>
+          <div style="margin-top:16px;font-size:13px;color:var(--sprout);">+ Connect another wallet</div>
+        </div>
+
+        <!-- notifications -->
+        <div style="background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:24px 26px;">
+          <div class="display" style="font-size:15px;margin-bottom:18px;">Notifications</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-top:1px solid var(--line);">
+            <span style="font-size:13.5px;">Grow-back contributions</span>
+            <div style="width:40px;height:24px;border-radius:99px;background:var(--sprout);position:relative;"><div style="position:absolute;top:3px;right:3px;width:18px;height:18px;border-radius:50%;background:var(--ink);"></div></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-top:1px solid var(--line);">
+            <span style="font-size:13.5px;">Large transactions</span>
+            <div style="width:40px;height:24px;border-radius:99px;background:var(--sprout);position:relative;"><div style="position:absolute;top:3px;right:3px;width:18px;height:18px;border-radius:50%;background:var(--ink);"></div></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-top:1px solid var(--line);">
+            <span style="font-size:13.5px;">Product &amp; launch updates</span>
+            <div style="width:40px;height:24px;border-radius:99px;background:var(--line);position:relative;"><div style="position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:var(--text-dim);"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- security / sessions -->
+      <div style="width:360px;flex-shrink:0;">
+        <div style="background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:24px 26px;">
+          <div class="display" style="font-size:15px;margin-bottom:4px;">Active sessions</div>
+          <div style="font-size:12.5px;color:var(--text-dim);margin-bottom:18px;">Signed in via Sign-In with Ethereum.</div>
+
+          <div style="padding:14px 0;border-top:1px solid var(--line);">
+            <div style="display:flex;justify-content:space-between;">
+              <span style="font-size:13px;">Chrome · macOS</span>
+              <span style="font-size:10.5px;font-weight:600;color:var(--sprout);background:rgba(216,255,77,.10);padding:3px 9px;border-radius:999px;">This device</span>
+            </div>
+            <div style="font-size:11.5px;color:var(--text-dim);margin-top:4px;">San Francisco, US · active now</div>
+          </div>
+          <div style="padding:14px 0;border-top:1px solid var(--line);">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span style="font-size:13px;">Safari · iOS</span>
+              <span style="font-size:12.5px;color:var(--text-dim);">Revoke</span>
+            </div>
+            <div style="font-size:11.5px;color:var(--text-dim);margin-top:4px;">San Francisco, US · 2 days ago</div>
+          </div>
+
+          <div style="margin-top:18px;padding:12px;border-radius:var(--radius-md);border:1px solid var(--line);text-align:center;font-size:13px;color:var(--text-dim);">Sign out everywhere</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

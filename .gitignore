@@ -1,0 +1,5 @@
+.vercel
+# generated Claude Design canvas output (~2MB, bakes in the whole editor payload) —
+# the source .dc.html/canvas.json files are the useful artifact, this isn't; the
+# live presentation link is what's shared, not this file
+dashboard-design/sprout-dashboard-concept.html
