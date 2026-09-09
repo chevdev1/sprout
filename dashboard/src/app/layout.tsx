@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Instrument_Sans } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
+import { CardAccessGate } from "@/components/CardAccessGate";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -27,7 +28,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${inter.variable} ${instrumentSans.variable} h-full`}
     >
       <body className="min-h-full bg-bg text-text antialiased">
-        <Providers>{children}</Providers>
+        <Providers>
+          <CardAccessGate>{children}</CardAccessGate>
+        </Providers>
       </body>
     </html>
   );
