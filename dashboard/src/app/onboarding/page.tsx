@@ -312,52 +312,58 @@ export default function OnboardingPage() {
         </div>
       )}
 
-      {/* Step 4 — success */}
+      {/* Step 4 — full-screen welcome takeover, card is actually issued now */}
       {step === 4 && (
-        <div className="flex-1 w-full flex flex-col items-center justify-center relative z-10 [animation:fade-up_var(--motion-slow)_var(--ease-out-expo)]">
-          <span className="text-[11px] font-semibold text-sprout-deep uppercase tracking-wide mb-3.5">
-            Step 4 of 4
-          </span>
-          <h1 className="font-display text-[34px] tracking-tight mb-2">
-            Your card is ready.
-          </h1>
-          <p className="text-sm text-text-dim mb-10">
-            Funded and grow-back is live. Reveal it from Manage card.
-          </p>
+        <div className="fixed inset-0 z-20 bg-bg flex flex-col items-center justify-center overflow-hidden">
+          <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 rounded-full border border-sprout/40 [animation:welcome-ring_1.8s_var(--ease-out-expo)_infinite]" />
+          <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 rounded-full border border-sprout/40 [animation:welcome-ring_1.8s_var(--ease-out-expo)_.6s_infinite]" />
+          <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-160 h-160 rounded-full bg-[radial-gradient(circle,rgba(216,255,77,.14),transparent_68%)]" />
 
-          <div
-            className="w-100 aspect-[1.586/1] rounded-[18px] border border-(--line) p-6.5 flex flex-col justify-between mb-9"
-            style={{
-              background:
-                "linear-gradient(135deg, rgba(255,255,255,.06), rgba(255,255,255,.01) 55%), linear-gradient(135deg,#20241C 0%,#0D110C 75%)",
-              boxShadow:
-                "0 30px 60px -20px rgba(216,255,77,.25), 0 20px 50px -20px rgba(0,0,0,.6)",
-            }}
-          >
-            <div className="flex justify-between items-start">
-              <div className="flex items-center gap-1.75">
-                <SproutLogo size={16} className="text-sprout" />
-                <span className="font-display text-[15px]">sprout</span>
+          <div className="relative z-10 flex flex-col items-center">
+            <span className="text-[11px] font-semibold text-sprout-deep uppercase tracking-wide mb-3.5 [animation:fade-up_var(--motion-base)_var(--ease-out-expo)_backwards]">
+              Card issued
+            </span>
+            <h1 className="font-display text-[38px] tracking-tight mb-2 [animation:fade-up_var(--motion-base)_var(--ease-out-expo)_80ms_backwards]">
+              Welcome to Sprout.
+            </h1>
+            <p className="text-sm text-text-dim mb-10 [animation:fade-up_var(--motion-base)_var(--ease-out-expo)_160ms_backwards]">
+              Your card is funded and grow-back is live.
+            </p>
+
+            <div
+              className="w-100 aspect-[1.586/1] rounded-[18px] border border-(--line) p-6.5 flex flex-col justify-between mb-9 [animation:fade-up_var(--motion-slow)_var(--ease-out-expo)_240ms_backwards]"
+              style={{
+                background:
+                  "linear-gradient(135deg, rgba(255,255,255,.06), rgba(255,255,255,.01) 55%), linear-gradient(135deg,#20241C 0%,#0D110C 75%)",
+                boxShadow:
+                  "0 30px 60px -20px rgba(216,255,77,.25), 0 20px 50px -20px rgba(0,0,0,.6)",
+              }}
+            >
+              <div className="flex justify-between items-start">
+                <div className="flex items-center gap-1.75">
+                  <SproutLogo size={16} className="text-sprout" />
+                  <span className="font-display text-[15px]">sprout</span>
+                </div>
+                <span className="text-[10.5px] text-text-dim border border-(--line) rounded-full px-2.5 py-0.75">
+                  Robinhood Chain
+                </span>
               </div>
-              <span className="text-[10.5px] text-text-dim border border-(--line) rounded-full px-2.5 py-0.75">
-                Robinhood Chain
-              </span>
+              <div className="text-[#E4E4D8] text-base tracking-[2px] font-mono">
+                •••• •••• •••• ••••
+              </div>
+              <div className="flex justify-between text-[10.5px] text-text-dim tracking-wide">
+                <span>ETH · USDG · STOCKS</span>
+                <span>VIRTUAL</span>
+              </div>
             </div>
-            <div className="text-[#E4E4D8] text-base tracking-[2px] font-mono">
-              •••• •••• •••• ••••
-            </div>
-            <div className="flex justify-between text-[10.5px] text-text-dim tracking-wide">
-              <span>ETH · USDG · STOCKS</span>
-              <span>VIRTUAL</span>
-            </div>
-          </div>
 
-          <button
-            onClick={() => router.replace("/")}
-            className="px-7.5 py-3.5 rounded-full bg-sprout text-ink text-[14.5px] font-semibold"
-          >
-            Go to dashboard
-          </button>
+            <button
+              onClick={() => router.replace("/")}
+              className="px-7.5 py-3.5 rounded-full bg-sprout text-ink text-[14.5px] font-semibold [animation:fade-up_var(--motion-base)_var(--ease-out-expo)_340ms_backwards]"
+            >
+              Go to dashboard
+            </button>
+          </div>
         </div>
       )}
     </div>
