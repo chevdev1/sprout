@@ -13,6 +13,13 @@ import type { NextConfig } from "next";
 const x402Stub = "./stubs/x402-stub.js";
 
 const nextConfig: NextConfig = {
+  // Served under sprout-two-alpha.vercel.app/app/* via a rewrite in the
+  // main site's vercel.json (Next.js "Multi Zones" pattern) — this is a
+  // separately-built Next.js app under the hood (it needs its own SIWE
+  // backend routes later), but basePath makes every asset/link this app
+  // generates resolve under /app so it's invisible to the visitor: one
+  // domain, one URL bar, no second "project" they ever see.
+  basePath: "/app",
   turbopack: {
     resolveAlias: {
       "@x402/core/client": x402Stub,
