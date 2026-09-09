@@ -31,9 +31,9 @@ export default function OverviewPage() {
       <div className="flex-1 h-full overflow-hidden relative z-10 flex flex-col">
         <DashboardHeader title="Overview" cardBalance={MOCK.balance} />
 
-        <div className="flex-1 p-7 grid grid-cols-4 grid-rows-2 gap-4 overflow-auto">
-          {/* Balance — spans 2 cols */}
-          <div className="col-span-2 row-span-1 bg-surface border border-(--line) rounded-lg p-6.5 flex flex-col justify-between">
+        <div className="flex-1 p-4 sm:p-7 pb-20 md:pb-7 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 md:grid-rows-2 gap-4 overflow-auto">
+          {/* Balance — spans 2 cols on sm+ */}
+          <div className="sm:col-span-2 row-span-1 bg-surface border border-(--line) rounded-lg p-6.5 flex flex-col justify-between">
             <div className="text-xs text-text-dim uppercase tracking-wide">
               Card balance
             </div>
@@ -60,7 +60,7 @@ export default function OverviewPage() {
           </div>
 
           {/* Grow-back — highlight widget, spans both rows */}
-          <div className="col-span-1 row-span-2 bg-ink border border-(--line-on-ink) rounded-lg p-6 flex flex-col gap-3.5">
+          <div className="row-span-1 md:row-span-2 bg-ink border border-(--line-on-ink) rounded-lg p-6 flex flex-col gap-3.5">
             <span className="text-[10.5px] font-semibold text-sprout uppercase tracking-wide">
               Unique to Sprout
             </span>
@@ -84,7 +84,7 @@ export default function OverviewPage() {
           </div>
 
           {/* This month spend */}
-          <div className="col-span-1 row-span-1 bg-surface border border-(--line) rounded-lg p-5.5 flex flex-col justify-between">
+          <div className="bg-surface border border-(--line) rounded-lg p-5.5 flex flex-col justify-between">
             <div className="text-xs text-text-dim uppercase tracking-wide">
               This month
             </div>
@@ -99,7 +99,7 @@ export default function OverviewPage() {
           </div>
 
           {/* Network status */}
-          <div className="col-span-1 row-span-1 bg-surface border border-(--line) rounded-lg p-5.5 flex flex-col justify-between">
+          <div className="bg-surface border border-(--line) rounded-lg p-5.5 flex flex-col justify-between">
             <div className="text-xs text-text-dim uppercase tracking-wide">
               Network
             </div>
@@ -112,8 +112,8 @@ export default function OverviewPage() {
             </div>
           </div>
 
-          {/* Recent activity — spans 2 cols */}
-          <div className="col-span-2 row-span-1 bg-surface border border-(--line) rounded-lg p-5.5 flex flex-col">
+          {/* Recent activity — spans 2 cols on sm+ */}
+          <div className="sm:col-span-2 bg-surface border border-(--line) rounded-lg p-5.5 flex flex-col">
             <div className="text-xs text-text-dim uppercase tracking-wide mb-3.5">
               Recent activity
             </div>

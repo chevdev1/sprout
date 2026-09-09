@@ -31,7 +31,7 @@ export default function ApplyPage() {
 
   return (
     <div className="min-h-dvh flex items-center justify-center relative overflow-hidden bg-bg p-6">
-      <div className="pointer-events-none absolute -top-40 -right-30 w-140 h-140 rounded-full bg-[radial-gradient(circle,rgba(216,255,77,.10),transparent_70%)]" />
+      <div className="pointer-events-none absolute -top-40 -right-30 w-140 h-140 rounded-full bg-[radial-gradient(circle,var(--glow-a),transparent_70%)]" />
 
       <div className="w-full max-w-md bg-surface border border-(--line) rounded-lg p-8 relative z-10">
         <div className="flex items-center justify-between mb-8">

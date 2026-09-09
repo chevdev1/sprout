@@ -26,8 +26,8 @@ export default function CardPage() {
       <div className="flex-1 h-full overflow-hidden relative z-10 flex flex-col">
         <DashboardHeader title="Card" cardBalance="$2,840.20" />
 
-        <div className="flex-1 p-7 flex gap-9 overflow-auto">
-          <div className="w-100 shrink-0 flex flex-col gap-5">
+        <div className="flex-1 p-4 sm:p-7 pb-20 md:pb-7 flex flex-col md:flex-row gap-6 md:gap-9 overflow-auto">
+          <div className="w-full md:w-100 shrink-0 flex flex-col gap-5">
             <button
               onClick={reveal}
               className="aspect-[1.586/1] rounded-[18px] border border-(--line-on-ink) p-6.5 flex flex-col justify-between text-left relative overflow-hidden group"

@@ -14,6 +14,12 @@ export function CardAccessGate({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     setReady(false);
+    // Always reachable — it clears the flow/wallet state itself, so the
+    // gate can't route around it based on stale state.
+    if (pathname === "/reset") {
+      setReady(true);
+      return;
+    }
     const stage = getFlowStage();
 
     if (stage === "unpaid" && pathname !== "/apply") {

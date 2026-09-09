@@ -37,6 +37,16 @@
   --mist-on-ink: #9a9c8e;
   --line-on-ink: rgba(255, 255, 255, 0.1);
 
+  /* ambient sprout-green washes/rings/glows — a faint neon-yellow tint
+     that reads as a soft glow on a near-black background turns into a
+     visible sickly smear on white, so light theme uses a much fainter,
+     deeper (sprout-deep) tint instead of just lowering opacity */
+  --glow-a: rgba(143, 179, 0, 0.06);
+  --glow-b: rgba(143, 179, 0, 0.05);
+  --glow-strong: rgba(143, 179, 0, 0.08);
+  --ring-color: rgba(143, 179, 0, 0.32);
+  --card-glow: rgba(143, 179, 0, 0.14);
+
   color-scheme: light;
 
   /* motion system — same values/character as the landing page's
@@ -60,6 +70,11 @@
     --color-text-dim: #9a9c8e;
     --line: rgba(255, 255, 255, 0.1);
     --line-strong: rgba(255, 255, 255, 0.18);
+    --glow-a: rgba(216, 255, 77, 0.1);
+    --glow-b: rgba(216, 255, 77, 0.08);
+    --glow-strong: rgba(216, 255, 77, 0.14);
+    --ring-color: rgba(216, 255, 77, 0.4);
+    --card-glow: rgba(216, 255, 77, 0.25);
     color-scheme: dark;
   }
 }
@@ -71,6 +86,11 @@
   --color-text-dim: #9a9c8e;
   --line: rgba(255, 255, 255, 0.1);
   --line-strong: rgba(255, 255, 255, 0.18);
+  --glow-a: rgba(216, 255, 77, 0.1);
+  --glow-b: rgba(216, 255, 77, 0.08);
+  --glow-strong: rgba(216, 255, 77, 0.14);
+  --ring-color: rgba(216, 255, 77, 0.4);
+  --card-glow: rgba(216, 255, 77, 0.25);
   color-scheme: dark;
 }
 

@@ -107,10 +107,10 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="min-h-dvh bg-bg relative overflow-hidden flex flex-col items-center">
-      <div className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 w-175 h-175 rounded-full bg-[radial-gradient(circle,rgba(216,255,77,.08),transparent_70%)]" />
+    <div className="min-h-dvh bg-bg relative overflow-hidden flex flex-col items-center px-4">
+      <div className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 w-175 h-175 rounded-full bg-[radial-gradient(circle,var(--glow-b),transparent_70%)]" />
 
-      <div className="w-full h-18 shrink-0 flex items-center justify-between px-8 relative z-10">
+      <div className="w-full max-w-160 h-18 shrink-0 flex items-center justify-between relative z-10">
         <div className="flex items-center gap-2">
           <SproutLogo size={20} className="text-sprout" />
           <span className="font-display text-base">sprout</span>
@@ -126,7 +126,7 @@ export default function OnboardingPage() {
 
       {/* Step 1 — card type + funding */}
       {step === 1 && (
-        <div className="w-150 mt-8 bg-surface border border-(--line) rounded-lg p-10 relative z-10 [animation:fade-up_var(--motion-base)_var(--ease-out-expo)]">
+        <div className="w-full max-w-150 mt-8 bg-surface border border-(--line) rounded-lg p-6 sm:p-10 relative z-10 [animation:fade-up_var(--motion-base)_var(--ease-out-expo)]">
           <div className="text-[11px] font-semibold text-sprout-deep uppercase tracking-wide mb-2.5">
             Step 1 of 4
           </div>
@@ -137,7 +137,7 @@ export default function OnboardingPage() {
             Virtual is instant. Physical ships once your virtual card is active.
           </p>
 
-          <div className="flex gap-3 mb-2.5">
+          <div className="flex flex-col sm:flex-row gap-3 mb-2.5">
             <div className="flex-1 p-4.5 rounded-md border-[1.5px] border-sprout bg-sprout/6">
               <div className="flex justify-between items-start">
                 <span className="font-display text-[15px]">Virtual</span>
@@ -196,7 +196,7 @@ export default function OnboardingPage() {
 
       {/* Step 2 — grow-back ticker */}
       {step === 2 && (
-        <div className="w-160 mt-8 bg-surface border border-(--line) rounded-lg p-10 relative z-10 [animation:fade-up_var(--motion-base)_var(--ease-out-expo)]">
+        <div className="w-full max-w-160 mt-8 bg-surface border border-(--line) rounded-lg p-6 sm:p-10 relative z-10 [animation:fade-up_var(--motion-base)_var(--ease-out-expo)]">
           <div className="text-[11px] font-semibold text-sprout-deep uppercase tracking-wide mb-2.5">
             Step 2 of 4 · Unique to Sprout
           </div>
@@ -252,7 +252,7 @@ export default function OnboardingPage() {
 
       {/* Step 3 — review */}
       {step === 3 && (
-        <div className="w-160 mt-8 bg-surface border border-(--line) rounded-lg p-10 relative z-10 [animation:fade-up_var(--motion-base)_var(--ease-out-expo)]">
+        <div className="w-full max-w-160 mt-8 bg-surface border border-(--line) rounded-lg p-6 sm:p-10 relative z-10 [animation:fade-up_var(--motion-base)_var(--ease-out-expo)]">
           <div className="text-[11px] font-semibold text-sprout-deep uppercase tracking-wide mb-2.5">
             Step 3 of 4
           </div>
@@ -322,16 +322,16 @@ export default function OnboardingPage() {
 
       {/* Step 4 — full-screen welcome takeover, card is actually issued now */}
       {step === 4 && (
-        <div className="fixed inset-0 z-20 bg-bg flex flex-col items-center justify-center overflow-hidden">
-          <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 rounded-full border border-sprout/40 [animation:welcome-ring_1.8s_var(--ease-out-expo)_infinite]" />
-          <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 rounded-full border border-sprout/40 [animation:welcome-ring_1.8s_var(--ease-out-expo)_.6s_infinite]" />
-          <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-160 h-160 rounded-full bg-[radial-gradient(circle,rgba(216,255,77,.14),transparent_68%)]" />
+        <div className="fixed inset-0 z-20 bg-bg flex flex-col items-center justify-center overflow-hidden px-6">
+          <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 rounded-full border border-(--ring-color) [animation:welcome-ring_1.8s_var(--ease-out-expo)_infinite]" />
+          <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 rounded-full border border-(--ring-color) [animation:welcome-ring_1.8s_var(--ease-out-expo)_.6s_infinite]" />
+          <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-160 h-160 rounded-full bg-[radial-gradient(circle,var(--glow-strong),transparent_68%)]" />
 
-          <div className="relative z-10 flex flex-col items-center">
+          <div className="relative z-10 flex flex-col items-center text-center">
             <span className="text-[11px] font-semibold text-sprout-deep uppercase tracking-wide mb-3.5 [animation:fade-up_var(--motion-base)_var(--ease-out-expo)_backwards]">
               Card issued
             </span>
-            <h1 className="font-display text-[38px] tracking-tight mb-2 [animation:fade-up_var(--motion-base)_var(--ease-out-expo)_80ms_backwards]">
+            <h1 className="font-display text-[28px] sm:text-[38px] tracking-tight mb-2 [animation:fade-up_var(--motion-base)_var(--ease-out-expo)_80ms_backwards]">
               Welcome to Sprout.
             </h1>
             <p className="text-sm text-text-dim mb-10 [animation:fade-up_var(--motion-base)_var(--ease-out-expo)_160ms_backwards]">
@@ -339,12 +339,12 @@ export default function OnboardingPage() {
             </p>
 
             <div
-              className="w-100 aspect-[1.586/1] rounded-[18px] border border-(--line-on-ink) p-6.5 flex flex-col justify-between mb-9 [animation:fade-up_var(--motion-slow)_var(--ease-out-expo)_240ms_backwards]"
+              className="w-full max-w-100 aspect-[1.586/1] rounded-[18px] border border-(--line-on-ink) p-6.5 flex flex-col justify-between mb-9 [animation:fade-up_var(--motion-slow)_var(--ease-out-expo)_240ms_backwards]"
               style={{
                 background:
                   "linear-gradient(135deg, rgba(255,255,255,.06), rgba(255,255,255,.01) 55%), linear-gradient(135deg,#20241C 0%,#0D110C 75%)",
                 boxShadow:
-                  "0 30px 60px -20px rgba(216,255,77,.25), 0 20px 50px -20px rgba(0,0,0,.6)",
+                  "0 30px 60px -20px var(--card-glow), 0 20px 50px -20px rgba(0,0,0,.6)",
               }}
             >
               <div className="flex justify-between items-start">
