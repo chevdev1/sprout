@@ -5,9 +5,17 @@ import { Sidebar } from "@/components/Sidebar";
 import { DashboardHeader } from "@/components/DashboardHeader";
 import { SproutLogo } from "@/components/SproutLogo";
 import { getOrIssueCard, type CardData } from "@/lib/cardAccess";
+import { useToast } from "@/components/ToastProvider";
 
 export default function CardPage() {
   const [card, setCard] = useState<CardData | null>(null);
+  const toast = useToast();
+
+  function reveal() {
+    if (card) return;
+    setCard(getOrIssueCard());
+    toast.push("Card revealed", "Your number, expiry and CVV are ready to use");
+  }
 
   return (
     <div className="flex h-dvh bg-bg relative overflow-hidden">
@@ -21,7 +29,7 @@ export default function CardPage() {
         <div className="flex-1 p-7 flex gap-9 overflow-auto">
           <div className="w-100 shrink-0 flex flex-col gap-5">
             <button
-              onClick={() => !card && setCard(getOrIssueCard())}
+              onClick={reveal}
               className="aspect-[1.586/1] rounded-[18px] border border-(--line) p-6.5 flex flex-col justify-between text-left relative overflow-hidden group"
               style={{
                 background:

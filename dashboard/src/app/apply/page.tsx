@@ -5,21 +5,24 @@ import { useRouter } from "next/navigation";
 import { useAccount } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { SproutLogo } from "@/components/SproutLogo";
-import { grantCardAccess } from "@/lib/cardAccess";
+import { setFlowStage } from "@/lib/cardAccess";
+import { useToast } from "@/components/ToastProvider";
 
 // Phase 1 mock: no real charge yet — Phase 3 wires this to an actual
 // on-chain payment + server-verified session before granting access.
 export default function ApplyPage() {
   const router = useRouter();
   const { isConnected } = useAccount();
+  const toast = useToast();
   const [status, setStatus] = useState<"idle" | "paying" | "done">("idle");
 
   function handlePay() {
     setStatus("paying");
     setTimeout(() => {
-      grantCardAccess();
+      setFlowStage("paid");
       setStatus("done");
-      router.replace("/");
+      toast.push("Payment confirmed", "$5.00 received — setting up your card");
+      router.replace("/welcome");
     }, 1400);
   }
 

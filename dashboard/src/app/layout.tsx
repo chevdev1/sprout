@@ -3,6 +3,7 @@ import { Inter, Instrument_Sans } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 import { CardAccessGate } from "@/components/CardAccessGate";
+import { ToastProvider } from "@/components/ToastProvider";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -29,7 +30,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full bg-bg text-text antialiased">
         <Providers>
-          <CardAccessGate>{children}</CardAccessGate>
+          <ToastProvider>
+            <CardAccessGate>{children}</CardAccessGate>
+          </ToastProvider>
         </Providers>
       </body>
     </html>

@@ -1,28 +1,57 @@
-// Mock card-issuance gate for Phase 1 UX testing — no backend yet.
+// Mock card-issuance flow for Phase 1 UX testing — no backend yet.
 // Real version (Phase 3) replaces localStorage with a server-verified
-// payment record tied to the SIWE session.
-const ACCESS_KEY = "sprout_card_access";
+// payment + onboarding record tied to the SIWE session.
+const STAGE_KEY = "sprout_flow_stage";
 const CARD_KEY = "sprout_card_data";
+const SETUP_KEY = "sprout_card_setup";
+
+export type FlowStage = "unpaid" | "paid" | "onboarded";
+
+export function getFlowStage(): FlowStage {
+  if (typeof window === "undefined") return "unpaid";
+  const v = window.localStorage.getItem(STAGE_KEY);
+  return v === "paid" || v === "onboarded" ? v : "unpaid";
+}
+
+export function setFlowStage(stage: FlowStage) {
+  window.localStorage.setItem(STAGE_KEY, stage);
+}
+
+export function resetFlow() {
+  window.localStorage.removeItem(STAGE_KEY);
+  window.localStorage.removeItem(CARD_KEY);
+  window.localStorage.removeItem(SETUP_KEY);
+}
+
+export type CardSetup = {
+  fundingAsset: "ETH" | "USDG" | "Tokenized stocks";
+  fundingAmount: string;
+  growBackTicker: string;
+  growBackRate: string;
+};
+
+export const DEFAULT_SETUP: CardSetup = {
+  fundingAsset: "ETH",
+  fundingAmount: "1.20 ETH",
+  growBackTicker: "AAPL",
+  growBackRate: "1.5%",
+};
+
+export function getCardSetup(): CardSetup {
+  if (typeof window === "undefined") return DEFAULT_SETUP;
+  const stored = window.localStorage.getItem(SETUP_KEY);
+  return stored ? (JSON.parse(stored) as CardSetup) : DEFAULT_SETUP;
+}
+
+export function saveCardSetup(setup: CardSetup) {
+  window.localStorage.setItem(SETUP_KEY, JSON.stringify(setup));
+}
 
 export type CardData = {
   number: string;
   expiry: string;
   cvv: string;
 };
-
-export function hasCardAccess(): boolean {
-  if (typeof window === "undefined") return false;
-  return window.localStorage.getItem(ACCESS_KEY) === "true";
-}
-
-export function grantCardAccess() {
-  window.localStorage.setItem(ACCESS_KEY, "true");
-}
-
-export function resetCardAccess() {
-  window.localStorage.removeItem(ACCESS_KEY);
-  window.localStorage.removeItem(CARD_KEY);
-}
 
 function randomDigits(n: number) {
   let out = "";

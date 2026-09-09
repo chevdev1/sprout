@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { hasCardAccess } from "@/lib/cardAccess";
+import { getFlowStage } from "@/lib/cardAccess";
 
-// Routes reachable before a card is issued.
-const PUBLIC_PATHS = new Set(["/apply"]);
+// Onboarding routes reachable only in their matching flow stage.
+const ENTRY_PATHS = new Set(["/apply", "/welcome", "/onboarding"]);
 
 export function CardAccessGate({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -14,14 +14,17 @@ export function CardAccessGate({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     setReady(false);
-    const paid = hasCardAccess();
-    const isPublic = PUBLIC_PATHS.has(pathname);
+    const stage = getFlowStage();
 
-    if (!paid && !isPublic) {
+    if (stage === "unpaid" && pathname !== "/apply") {
       router.replace("/apply");
       return;
     }
-    if (paid && isPublic) {
+    if (stage === "paid" && pathname !== "/welcome" && pathname !== "/onboarding") {
+      router.replace("/welcome");
+      return;
+    }
+    if (stage === "onboarded" && ENTRY_PATHS.has(pathname)) {
       router.replace("/");
       return;
     }
