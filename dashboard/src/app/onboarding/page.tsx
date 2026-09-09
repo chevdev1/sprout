@@ -29,7 +29,7 @@ function Stepper({ step }: { step: number }) {
             <div
               className={`w-7 h-7 rounded-full flex items-center justify-center text-xs transition-colors duration-[var(--motion-fast)] ${
                 state === "done"
-                  ? "bg-sprout text-ink font-bold"
+                  ? "bg-(--fill-sprout) text-ink font-bold"
                   : state === "active"
                     ? "bg-ink border border-sprout text-sprout"
                     : "border border-(--line) text-text-dim"
@@ -65,7 +65,7 @@ function ChoiceChip({
       onClick={onClick}
       className={`px-4.5 py-2.25 rounded-full text-[13.5px] transition-colors duration-[var(--motion-fast)] ${
         active
-          ? "bg-sprout text-ink font-semibold"
+          ? "bg-(--fill-sprout) text-ink font-semibold"
           : "border border-(--line) text-text-dim hover:text-text hover:border-sprout/40"
       }`}
     >
@@ -141,7 +141,7 @@ export default function OnboardingPage() {
             <div className="flex-1 p-4.5 rounded-md border-[1.5px] border-sprout bg-sprout/6">
               <div className="flex justify-between items-start">
                 <span className="font-display text-[15px]">Virtual</span>
-                <span className="text-[10.5px] font-semibold text-ink bg-sprout px-2 py-0.75 rounded-full">
+                <span className="text-[10.5px] font-semibold text-ink bg-(--fill-sprout) px-2 py-0.75 rounded-full">
                   $5 one-time
                 </span>
               </div>
@@ -186,7 +186,7 @@ export default function OnboardingPage() {
           <div className="flex justify-end">
             <button
               onClick={() => setStep(2)}
-              className="px-7 py-3.25 rounded-full bg-sprout text-ink text-sm font-semibold"
+              className="px-7 py-3.25 rounded-full bg-(--fill-sprout) text-ink text-sm font-semibold"
             >
               Continue
             </button>
@@ -242,7 +242,7 @@ export default function OnboardingPage() {
             </button>
             <button
               onClick={() => setStep(3)}
-              className="px-7 py-3.25 rounded-full bg-sprout text-ink text-sm font-semibold"
+              className="px-7 py-3.25 rounded-full bg-(--fill-sprout) text-ink text-sm font-semibold"
             >
               Continue
             </button>
@@ -312,7 +312,7 @@ export default function OnboardingPage() {
             <button
               onClick={confirmAndSign}
               disabled={confirming}
-              className="px-7 py-3.25 rounded-full bg-sprout text-ink text-sm font-semibold disabled:opacity-50"
+              className="px-7 py-3.25 rounded-full bg-(--fill-sprout) text-ink text-sm font-semibold disabled:opacity-50"
             >
               {confirming ? "Signing…" : "Confirm & sign"}
             </button>
@@ -367,7 +367,7 @@ export default function OnboardingPage() {
 
             <button
               onClick={() => router.replace("/")}
-              className="px-7.5 py-3.5 rounded-full bg-sprout text-ink text-[14.5px] font-semibold [animation:fade-up_var(--motion-base)_var(--ease-out-expo)_340ms_backwards]"
+              className="px-7.5 py-3.5 rounded-full bg-(--fill-sprout) text-ink text-[14.5px] font-semibold [animation:fade-up_var(--motion-base)_var(--ease-out-expo)_340ms_backwards]"
             >
               Go to dashboard
             </button>

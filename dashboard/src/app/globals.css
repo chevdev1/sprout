@@ -47,6 +47,21 @@
   --ring-color: rgba(143, 179, 0, 0.32);
   --card-glow: rgba(143, 179, 0, 0.14);
 
+  /* Solid button/chip fills — --color-sprout itself (#D8FF4D) is a
+     near-fluorescent lime that reads fine as a small accent on a dark
+     surface but is genuinely harsh as a large filled shape on white.
+     Dark theme keeps the original vivid fill; light theme fills with
+     --sprout-deep instead. Text/dot/outline accents stay on
+     --color-sprout in both themes — only large solid fills change. */
+  --fill-sprout: var(--color-sprout-deep);
+  --fill-sprout-hover: #769300;
+
+  /* light-theme card elevation — flat 1px borders on white read as
+     unfinished; a soft shadow gives cards actual depth. Dark theme
+     keeps relying on the border alone (a shadow barely reads on
+     near-black anyway). */
+  --card-shadow: 0 1px 2px rgba(28, 29, 24, 0.04), 0 8px 24px -12px rgba(28, 29, 24, 0.1);
+
   color-scheme: light;
 
   /* motion system — same values/character as the landing page's
@@ -75,6 +90,9 @@
     --glow-strong: rgba(216, 255, 77, 0.14);
     --ring-color: rgba(216, 255, 77, 0.4);
     --card-glow: rgba(216, 255, 77, 0.25);
+    --fill-sprout: var(--color-sprout);
+    --fill-sprout-hover: var(--color-sprout-deep);
+    --card-shadow: none;
     color-scheme: dark;
   }
 }
@@ -91,6 +109,9 @@
   --glow-strong: rgba(216, 255, 77, 0.14);
   --ring-color: rgba(216, 255, 77, 0.4);
   --card-glow: rgba(216, 255, 77, 0.25);
+  --fill-sprout: var(--color-sprout);
+  --fill-sprout-hover: var(--color-sprout-deep);
+  --card-shadow: none;
   color-scheme: dark;
 }
 
@@ -142,6 +163,13 @@ body {
 
 .num {
   font-variant-numeric: tabular-nums;
+}
+
+/* Gives every bg-surface panel real elevation in light theme instead of
+   just a hairline border (--card-shadow is none in dark theme, where a
+   shadow barely reads against near-black anyway — see :root above). */
+.bg-surface {
+  box-shadow: var(--card-shadow);
 }
 
 /* armed for ~1 tick around a theme switch only — see ThemeToggle */

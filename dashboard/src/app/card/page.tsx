@@ -4,17 +4,30 @@ import { useState, type CSSProperties } from "react";
 import { Sidebar } from "@/components/Sidebar";
 import { DashboardHeader } from "@/components/DashboardHeader";
 import { SproutLogo } from "@/components/SproutLogo";
+import { Skeleton } from "@/components/Skeleton";
 import { getOrIssueCard, type CardData } from "@/lib/cardAccess";
+import { useDashboardData } from "@/lib/dashboardData";
 import { useToast } from "@/components/ToastProvider";
 
 function stagger(index: number): CSSProperties {
   return { "--stagger-index": index } as CSSProperties;
 }
 
+function money(n: number) {
+  return n.toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+}
+
 export default function CardPage() {
   const [card, setCard] = useState<CardData | null>(null);
   const [frozen, setFrozen] = useState(false);
   const toast = useToast();
+  const { state, data } = useDashboardData();
+  const loading = state === "loading";
 
   function reveal() {
     if (card) return;
@@ -40,7 +53,7 @@ export default function CardPage() {
       <Sidebar active="Card" />
 
       <div className="flex-1 h-full overflow-hidden relative z-10 flex flex-col">
-        <DashboardHeader title="Card" cardBalance="$2,840.20" />
+        <DashboardHeader title="Card" />
 
         <div className="flex-1 p-4 sm:p-7 pb-20 md:pb-7 flex flex-col md:flex-row gap-6 md:gap-9 overflow-auto">
           <div className="w-full md:w-100 shrink-0 flex flex-col gap-5">
@@ -133,7 +146,7 @@ export default function CardPage() {
             </div>
 
             <div className="stagger-card flex gap-2.5" style={stagger(2)}>
-              <button className="flex-1 min-h-11 py-3 rounded-full bg-sprout text-ink text-[13.5px] font-semibold hover:bg-sprout-deep active:scale-[0.97] transition-[background-color,transform] duration-[var(--dur-hover)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-sprout focus-visible:outline-offset-2">
+              <button className="flex-1 min-h-11 py-3 rounded-full bg-(--fill-sprout) text-ink text-[13.5px] font-semibold hover:bg-(--fill-sprout-hover) active:scale-[0.97] transition-[background-color,transform] duration-[var(--dur-hover)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-sprout focus-visible:outline-offset-2">
                 Top up
               </button>
               <button className="flex-1 min-h-11 py-3 rounded-full border border-(--line) text-[13.5px] text-text-dim hover:border-sprout/40 hover:text-text active:scale-[0.97] transition-[border-color,color,transform] duration-[var(--dur-hover)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-sprout focus-visible:outline-offset-2">
@@ -150,9 +163,20 @@ export default function CardPage() {
               <div className="text-xs text-text-dim uppercase tracking-wide mb-2.5">
                 Available balance
               </div>
-              <div className="font-display num text-[44px] tracking-tight">
-                $2,840.20
-              </div>
+              {loading ? (
+                <Skeleton className="h-11 w-40" />
+              ) : (
+                <>
+                  <div className="font-display num text-[44px] tracking-tight leading-none">
+                    {money(data.balance.total)}
+                  </div>
+                  {data.balance.total === 0 && (
+                    <p className="text-xs text-text-dim mt-2.5">
+                      No funds yet — top up to start spending.
+                    </p>
+                  )}
+                </>
+              )}
             </div>
 
             <div
@@ -164,26 +188,34 @@ export default function CardPage() {
                   <span className="text-[10.5px] font-semibold text-sprout uppercase tracking-wide">
                     Grow-back · Unique to Sprout
                   </span>
-                  <div className="font-display text-(--paper) text-xl mt-1.5">
-                    Routing to AAPL
+                  {loading ? (
+                    <Skeleton className="h-6 w-32 mt-2" />
+                  ) : (
+                    <div className="font-display text-(--paper) text-xl mt-1.5">
+                      {data.rewards.ticker ? `Routing to ${data.rewards.ticker}` : "Ticker not selected"}
+                    </div>
+                  )}
+                </div>
+                {!loading && (
+                  <div className="font-display num text-xl text-sprout text-right shrink-0">
+                    {data.rewards.ticker ? `+${money(data.rewards.grownThisMonth)}` : money(0)}
+                    <span className="text-[11px] text-(--mist-on-ink)"> this month</span>
                   </div>
-                </div>
-                <div className="font-display num text-xl text-sprout">
-                  +$42.80
-                  <span className="text-[11px] text-(--mist-on-ink)"> this month</span>
-                </div>
+                )}
               </div>
-              <div className="flex gap-2 flex-wrap">
-                <span className="px-4 py-2 rounded-full bg-sprout text-ink text-xs font-semibold">
-                  AAPL
-                </span>
-                <span className="px-4 py-2 rounded-full border border-(--line-on-ink) text-xs text-(--mist-on-ink)">
-                  ETH
-                </span>
-                <span className="px-4 py-2 rounded-full border border-(--line-on-ink) text-xs text-(--mist-on-ink)">
-                  SPY ETF
-                </span>
-              </div>
+              {data.rewards.ticker && (
+                <div className="flex gap-2 flex-wrap">
+                  <span className="px-4 py-2 rounded-full bg-(--fill-sprout) text-ink text-xs font-semibold">
+                    {data.rewards.ticker}
+                  </span>
+                  <span className="px-4 py-2 rounded-full border border-(--line-on-ink) text-xs text-(--mist-on-ink)">
+                    ETH
+                  </span>
+                  <span className="px-4 py-2 rounded-full border border-(--line-on-ink) text-xs text-(--mist-on-ink)">
+                    SPY ETF
+                  </span>
+                </div>
+              )}
             </div>
 
             <div
@@ -193,18 +225,29 @@ export default function CardPage() {
               <div className="text-xs text-text-dim uppercase tracking-wide mb-3.5">
                 Recent on this card
               </div>
-              <div className="flex flex-col gap-3">
-                {[
-                  ["Whole Foods", "−$84.20"],
-                  ["Uber", "−$18.40"],
-                  ["Spotify", "−$11.99"],
-                ].map(([merchant, amount]) => (
-                  <div key={merchant} className="flex justify-between text-[13.5px]">
-                    <span className="text-text-dim">{merchant}</span>
-                    <b className="font-medium">{amount}</b>
-                  </div>
-                ))}
-              </div>
+              {loading ? (
+                <div className="flex flex-col gap-3">
+                  <Skeleton className="h-4.5 w-full" />
+                  <Skeleton className="h-4.5 w-full" />
+                  <Skeleton className="h-4.5 w-full" />
+                </div>
+              ) : data.activity.length === 0 ? (
+                <div className="py-2">
+                  <div className="font-display text-[15px]">No transactions yet</div>
+                  <p className="text-xs text-text-dim mt-1">
+                    Purchases show up here right after you pay.
+                  </p>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-3">
+                  {data.activity.map((row) => (
+                    <div key={row.id} className="flex justify-between text-[13.5px]">
+                      <span className="text-text-dim truncate min-w-0">{row.merchant}</span>
+                      <b className="font-medium shrink-0">{money(row.spend)}</b>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>

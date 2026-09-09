@@ -98,7 +98,7 @@ export default function ApplyPage() {
           <button
             onClick={handlePay}
             disabled={!isConnected || status !== "idle"}
-            className="w-full px-4 py-3.5 rounded-full bg-sprout text-ink text-sm font-semibold disabled:opacity-40 disabled:cursor-not-allowed transition-opacity duration-[var(--motion-fast)]"
+            className="w-full px-4 py-3.5 rounded-full bg-(--fill-sprout) text-ink text-sm font-semibold disabled:opacity-40 disabled:cursor-not-allowed transition-opacity duration-[var(--motion-fast)]"
           >
             {status === "paying" ? "Processing payment…" : "Pay $5 & get card"}
           </button>

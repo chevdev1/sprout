@@ -74,13 +74,13 @@ export default function OverviewPage() {
                     <p className="text-sm text-(--mist-on-ink) mb-3.5">
                       Top up your card to start spending.
                     </p>
-                    <button className="min-h-11 px-5 py-2.5 rounded-full bg-sprout text-ink text-sm font-semibold hover:bg-sprout-deep active:scale-[0.97] transition-[background-color,transform] duration-[var(--dur-hover)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-sprout focus-visible:outline-offset-2">
+                    <button className="min-h-11 px-5 py-2.5 rounded-full bg-(--fill-sprout) text-ink text-sm font-semibold hover:bg-(--fill-sprout-hover) active:scale-[0.97] transition-[background-color,transform] duration-[var(--dur-hover)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-sprout focus-visible:outline-offset-2">
                       Top up
                     </button>
                   </div>
                 ) : (
                   <div className="flex gap-2.5 flex-wrap">
-                    <button className="min-h-11 px-5 py-2.5 rounded-full bg-sprout text-ink text-sm font-semibold hover:bg-sprout-deep active:scale-[0.97] transition-[background-color,transform] duration-[var(--dur-hover)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-sprout focus-visible:outline-offset-2">
+                    <button className="min-h-11 px-5 py-2.5 rounded-full bg-(--fill-sprout) text-ink text-sm font-semibold hover:bg-(--fill-sprout-hover) active:scale-[0.97] transition-[background-color,transform] duration-[var(--dur-hover)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-sprout focus-visible:outline-offset-2">
                       Top up
                     </button>
                     <button className="min-h-11 px-5 py-2.5 rounded-full border border-(--line) text-sm text-text-dim hover:border-sprout/40 hover:text-text active:scale-[0.97] transition-[border-color,color,transform] duration-[var(--dur-hover)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-sprout focus-visible:outline-offset-2">

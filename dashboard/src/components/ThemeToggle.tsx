@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { THEME_CHANGE_EVENT } from "@/lib/useUiTheme";
 
 const STORAGE_KEY = "sprout-theme";
 const TRANSITION_MS = 480;
@@ -33,6 +34,7 @@ export function ThemeToggle() {
       // applies for this page load, just won't persist.
     }
     setTheme(next);
+    window.dispatchEvent(new Event(THEME_CHANGE_EVENT));
     window.setTimeout(() => {
       document.documentElement.classList.remove("theme-transition");
     }, TRANSITION_MS);

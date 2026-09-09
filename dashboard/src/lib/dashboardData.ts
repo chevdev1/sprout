@@ -22,33 +22,15 @@ export const EMPTY_DASHBOARD_DATA: DashboardData = {
   activity: [],
 };
 
-// Phase 1 mock — a funded, active card, matching the state a user lands
-// in right after the onboarding wizard (see /onboarding). Wired to real
-// balances/activity in Phase 4 (sprout-dashboard-concept.md, section 4).
-const FILLED_DEMO_DATA: DashboardData = {
-  balance: {
-    total: 2840.2,
-    currency: "USD",
-    split: [
-      { asset: "ETH", pct: 62 },
-      { asset: "USDG", pct: 28 },
-      { asset: "Stocks", pct: 10 },
-    ],
-  },
-  network: { name: "Robinhood Chain", status: "connected", lastTxAt: "4s ago" },
-  rewards: { ticker: "AAPL", grownThisMonth: 42.8 },
-  spend: { thisMonth: 1214, deltaPct: -8 },
-  activity: [
-    { id: "1", merchant: "Blue Bottle Coffee", spend: -6.5, grow: 0.1 },
-    { id: "2", merchant: "Whole Foods", spend: -84.2, grow: 1.26 },
-    { id: "3", merchant: "Uber", spend: -18.4, grow: 0.28 },
-  ],
-};
-
 export type DashboardLoadState = "loading" | "ready";
 
-// Simulates a network round-trip so loading -> filled is a real
-// transition to design/test against, not a permanent skeleton.
+// Phase 1: a freshly-issued card genuinely has no balance or history —
+// the onboarding wizard only chose a funding asset and a grow-back
+// ticker, it didn't move real money. So "ready" resolves to the real
+// empty state, not a fabricated funded demo, with only the one thing
+// that's actually true carried over from the user's own choice: the
+// grow-back ticker. Wired to real balances/activity in Phase 4
+// (sprout-dashboard-concept.md, section 4).
 export function useDashboardData(): { state: DashboardLoadState; data: DashboardData } {
   const [state, setState] = useState<DashboardLoadState>("loading");
   const [data, setData] = useState<DashboardData>(EMPTY_DASHBOARD_DATA);
@@ -57,8 +39,8 @@ export function useDashboardData(): { state: DashboardLoadState; data: Dashboard
     const t = setTimeout(() => {
       const setup = getCardSetup();
       setData({
-        ...FILLED_DEMO_DATA,
-        rewards: { ...FILLED_DEMO_DATA.rewards, ticker: setup.growBackTicker },
+        ...EMPTY_DASHBOARD_DATA,
+        rewards: { ...EMPTY_DASHBOARD_DATA.rewards, ticker: setup.growBackTicker },
       });
       setState("ready");
     }, 700);
