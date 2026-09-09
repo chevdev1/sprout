@@ -30,7 +30,7 @@ export default function CardPage() {
           <div className="w-100 shrink-0 flex flex-col gap-5">
             <button
               onClick={reveal}
-              className="aspect-[1.586/1] rounded-[18px] border border-(--line) p-6.5 flex flex-col justify-between text-left relative overflow-hidden group"
+              className="aspect-[1.586/1] rounded-[18px] border border-(--line-on-ink) p-6.5 flex flex-col justify-between text-left relative overflow-hidden group"
               style={{
                 background:
                   "linear-gradient(135deg, rgba(255,255,255,.06), rgba(255,255,255,.01) 55%), linear-gradient(135deg,#20241C 0%,#0D110C 75%)",
@@ -39,9 +39,9 @@ export default function CardPage() {
               <div className="flex justify-between items-start">
                 <div className="flex items-center gap-1.75">
                   <SproutLogo size={16} className="text-sprout" />
-                  <span className="font-display text-[15px]">sprout</span>
+                  <span className="font-display text-(--paper) text-[15px]">sprout</span>
                 </div>
-                <span className="text-[10.5px] text-text-dim border border-(--line) rounded-full px-2.5 py-0.75">
+                <span className="text-[10.5px] text-(--mist-on-ink) border border-(--line-on-ink) rounded-full px-2.5 py-0.75">
                   Robinhood Chain
                 </span>
               </div>
@@ -51,7 +51,7 @@ export default function CardPage() {
                   <div className="num text-[#E4E4D8] text-base tracking-[2px] font-mono">
                     {card.number}
                   </div>
-                  <div className="flex gap-5 text-xs text-text-dim">
+                  <div className="flex gap-5 text-xs text-(--mist-on-ink)">
                     <span>EXP {card.expiry}</span>
                     <span>CVV {card.cvv}</span>
                   </div>
@@ -67,7 +67,7 @@ export default function CardPage() {
                 </div>
               )}
 
-              <div className="flex justify-between text-[10.5px] text-text-dim tracking-wide">
+              <div className="flex justify-between text-[10.5px] text-(--mist-on-ink) tracking-wide">
                 <span>ETH · USDG · STOCKS</span>
                 <span>VIRTUAL</span>
               </div>
@@ -105,29 +105,29 @@ export default function CardPage() {
               </div>
             </div>
 
-            <div className="bg-ink border border-(--line) rounded-lg p-6.5">
+            <div className="bg-ink border border-(--line-on-ink) rounded-lg p-6.5">
               <div className="flex justify-between items-start mb-5">
                 <div>
                   <span className="text-[10.5px] font-semibold text-sprout uppercase tracking-wide">
                     Grow-back · Unique to Sprout
                   </span>
-                  <div className="font-display text-xl mt-1.5">
+                  <div className="font-display text-(--paper) text-xl mt-1.5">
                     Routing to AAPL
                   </div>
                 </div>
                 <div className="font-display num text-xl text-sprout">
                   +$42.80
-                  <span className="text-[11px] text-text-dim"> this month</span>
+                  <span className="text-[11px] text-(--mist-on-ink)"> this month</span>
                 </div>
               </div>
               <div className="flex gap-2 flex-wrap">
                 <span className="px-4 py-2 rounded-full bg-sprout text-ink text-xs font-semibold">
                   AAPL
                 </span>
-                <span className="px-4 py-2 rounded-full border border-(--line) text-xs text-text-dim">
+                <span className="px-4 py-2 rounded-full border border-(--line-on-ink) text-xs text-(--mist-on-ink)">
                   ETH
                 </span>
-                <span className="px-4 py-2 rounded-full border border-(--line) text-xs text-text-dim">
+                <span className="px-4 py-2 rounded-full border border-(--line-on-ink) text-xs text-(--mist-on-ink)">
                   SPY ETF
                 </span>
               </div>

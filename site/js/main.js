@@ -748,4 +748,35 @@
       dockSections.forEach(function (section) { dockObserver.observe(section); });
     }
   }
+
+  /* ---------- transition into the dashboard app ---------- */
+  // The dashboard (/app) is a separately-built Next.js app stitched onto
+  // this same domain — a bare navigation between the two felt like
+  // jumping between two different sites. This plays a brief branded
+  // beat (dark cut + pulsing mark) before the browser actually navigates.
+  var appLinks = document.querySelectorAll('a[href="/app"]');
+  if (appLinks.length) {
+    var appTransition = document.createElement('div');
+    appTransition.className = 'app-transition';
+    appTransition.setAttribute('aria-hidden', 'true');
+    appTransition.innerHTML =
+      '<div class="app-transition-mark"><svg viewBox="0 0 100 100"><path d="M50 88 C22 84 8 46 30 14 C40 36 46 62 50 88 Z M50 88 C78 84 92 46 70 14 C60 36 54 62 50 88 Z"/></svg></div>';
+    document.body.appendChild(appTransition);
+
+    var APP_TRANSITION_MS = reduceMotionQuery.matches ? 0 : 620;
+
+    appLinks.forEach(function (link) {
+      link.addEventListener('click', function (event) {
+        if (event.defaultPrevented || event.button !== 0) return;
+        if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        var href = link.getAttribute('href');
+        if (!href) return;
+        event.preventDefault();
+        appTransition.classList.add('is-active');
+        window.setTimeout(function () {
+          window.location.href = href;
+        }, APP_TRANSITION_MS);
+      });
+    });
+  }
 })();

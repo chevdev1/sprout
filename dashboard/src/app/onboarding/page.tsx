@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { SproutLogo } from "@/components/SproutLogo";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { useToast } from "@/components/ToastProvider";
 import { setFlowStage, saveCardSetup, type CardSetup } from "@/lib/cardAccess";
+import { primeAudio, playWelcomeChime } from "@/lib/sound";
 
 const STEP_LABELS = ["Card & funding", "Grow-back", "Review", "Ready"] as const;
 
@@ -88,7 +90,12 @@ export default function OnboardingPage() {
     setSetup((s) => ({ ...s, fundingAsset: asset, fundingAmount: amount }));
   }
 
+  useEffect(() => {
+    if (step === 4) playWelcomeChime();
+  }, [step]);
+
   function confirmAndSign() {
+    primeAudio(); // must fire inside the click gesture, not the setTimeout below
     setConfirming(true);
     setTimeout(() => {
       saveCardSetup(setup);
@@ -108,6 +115,7 @@ export default function OnboardingPage() {
           <SproutLogo size={20} className="text-sprout" />
           <span className="font-display text-base">sprout</span>
         </div>
+        {step < 4 && <ThemeToggle />}
       </div>
 
       {step < 4 && (
@@ -118,7 +126,7 @@ export default function OnboardingPage() {
 
       {/* Step 1 — card type + funding */}
       {step === 1 && (
-        <div className="w-150 mt-8 bg-ink-2 border border-(--line) rounded-lg p-10 relative z-10 [animation:fade-up_var(--motion-base)_var(--ease-out-expo)]">
+        <div className="w-150 mt-8 bg-surface border border-(--line) rounded-lg p-10 relative z-10 [animation:fade-up_var(--motion-base)_var(--ease-out-expo)]">
           <div className="text-[11px] font-semibold text-sprout-deep uppercase tracking-wide mb-2.5">
             Step 1 of 4
           </div>
@@ -188,7 +196,7 @@ export default function OnboardingPage() {
 
       {/* Step 2 — grow-back ticker */}
       {step === 2 && (
-        <div className="w-160 mt-8 bg-ink-2 border border-(--line) rounded-lg p-10 relative z-10 [animation:fade-up_var(--motion-base)_var(--ease-out-expo)]">
+        <div className="w-160 mt-8 bg-surface border border-(--line) rounded-lg p-10 relative z-10 [animation:fade-up_var(--motion-base)_var(--ease-out-expo)]">
           <div className="text-[11px] font-semibold text-sprout-deep uppercase tracking-wide mb-2.5">
             Step 2 of 4 · Unique to Sprout
           </div>
@@ -244,7 +252,7 @@ export default function OnboardingPage() {
 
       {/* Step 3 — review */}
       {step === 3 && (
-        <div className="w-160 mt-8 bg-ink-2 border border-(--line) rounded-lg p-10 relative z-10 [animation:fade-up_var(--motion-base)_var(--ease-out-expo)]">
+        <div className="w-160 mt-8 bg-surface border border-(--line) rounded-lg p-10 relative z-10 [animation:fade-up_var(--motion-base)_var(--ease-out-expo)]">
           <div className="text-[11px] font-semibold text-sprout-deep uppercase tracking-wide mb-2.5">
             Step 3 of 4
           </div>
@@ -331,7 +339,7 @@ export default function OnboardingPage() {
             </p>
 
             <div
-              className="w-100 aspect-[1.586/1] rounded-[18px] border border-(--line) p-6.5 flex flex-col justify-between mb-9 [animation:fade-up_var(--motion-slow)_var(--ease-out-expo)_240ms_backwards]"
+              className="w-100 aspect-[1.586/1] rounded-[18px] border border-(--line-on-ink) p-6.5 flex flex-col justify-between mb-9 [animation:fade-up_var(--motion-slow)_var(--ease-out-expo)_240ms_backwards]"
               style={{
                 background:
                   "linear-gradient(135deg, rgba(255,255,255,.06), rgba(255,255,255,.01) 55%), linear-gradient(135deg,#20241C 0%,#0D110C 75%)",
@@ -342,16 +350,16 @@ export default function OnboardingPage() {
               <div className="flex justify-between items-start">
                 <div className="flex items-center gap-1.75">
                   <SproutLogo size={16} className="text-sprout" />
-                  <span className="font-display text-[15px]">sprout</span>
+                  <span className="font-display text-(--paper) text-[15px]">sprout</span>
                 </div>
-                <span className="text-[10.5px] text-text-dim border border-(--line) rounded-full px-2.5 py-0.75">
+                <span className="text-[10.5px] text-(--mist-on-ink) border border-(--line-on-ink) rounded-full px-2.5 py-0.75">
                   Robinhood Chain
                 </span>
               </div>
               <div className="text-[#E4E4D8] text-base tracking-[2px] font-mono">
                 •••• •••• •••• ••••
               </div>
-              <div className="flex justify-between text-[10.5px] text-text-dim tracking-wide">
+              <div className="flex justify-between text-[10.5px] text-(--mist-on-ink) tracking-wide">
                 <span>ETH · USDG · STOCKS</span>
                 <span>VIRTUAL</span>
               </div>

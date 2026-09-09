@@ -74,6 +74,35 @@
   .theme-transition,.theme-transition *{transition:none !important;}
 }
 
+/* ---------- transition into the dashboard app (js/main.js) ---------- */
+.app-transition{
+  position:fixed;inset:0;z-index:9999;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--ink);
+  opacity:0;pointer-events:none;
+  transition:opacity var(--motion-slow) var(--ease-in-out-quart);
+}
+.app-transition.is-active{opacity:1;pointer-events:all;}
+.app-transition-mark{
+  width:56px;height:56px;
+  transform:scale(.7);opacity:0;
+  transition:
+    transform var(--motion-slow) var(--ease-spring),
+    opacity var(--motion-base) var(--ease-out-expo);
+}
+.app-transition.is-active .app-transition-mark{
+  transform:scale(1);opacity:1;
+  animation:app-mark-pulse 1.1s var(--ease-out-expo) .15s infinite;
+}
+.app-transition-mark svg{width:100%;height:100%;fill:var(--sprout);filter:drop-shadow(0 0 20px rgba(216,255,77,.5));}
+@keyframes app-mark-pulse{
+  0%,100%{filter:drop-shadow(0 0 16px rgba(216,255,77,.4));}
+  50%{filter:drop-shadow(0 0 32px rgba(216,255,77,.75));}
+}
+@media (prefers-reduced-motion:reduce){
+  .app-transition,.app-transition-mark{transition:none !important;animation:none !important;}
+}
+
 ::view-transition-old(root),
 ::view-transition-new(root){animation:none;mix-blend-mode:normal;}
 ::view-transition-old(root){z-index:1;}

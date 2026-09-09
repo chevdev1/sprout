@@ -4,6 +4,7 @@ import "./globals.css";
 import { Providers } from "./providers";
 import { CardAccessGate } from "@/components/CardAccessGate";
 import { ToastProvider } from "@/components/ToastProvider";
+import { ThemeInit } from "@/components/ThemeInit";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -29,6 +30,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${inter.variable} ${instrumentSans.variable} h-full`}
     >
       <body className="min-h-full bg-bg text-text antialiased">
+        <ThemeInit />
         <Providers>
           <ToastProvider>
             <CardAccessGate>{children}</CardAccessGate>

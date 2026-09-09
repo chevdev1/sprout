@@ -1,6 +1,7 @@
 "use client";
 
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { ThemeToggle } from "./ThemeToggle";
 
 export function DashboardHeader({
   title,
@@ -17,6 +18,7 @@ export function DashboardHeader({
         {cardBalance ? (
           <div className="font-display num text-[15px] px-1">{cardBalance}</div>
         ) : null}
+        <ThemeToggle />
         <ConnectButton showBalance={false} chainStatus="icon" />
       </div>
     </div>

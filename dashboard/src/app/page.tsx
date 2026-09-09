@@ -60,7 +60,7 @@ export default function OverviewPage() {
           </div>
 
           {/* Grow-back — highlight widget, spans both rows */}
-          <div className="col-span-1 row-span-2 bg-ink border border-(--line) rounded-lg p-6 flex flex-col gap-3.5">
+          <div className="col-span-1 row-span-2 bg-ink border border-(--line-on-ink) rounded-lg p-6 flex flex-col gap-3.5">
             <span className="text-[10.5px] font-semibold text-sprout uppercase tracking-wide">
               Unique to Sprout
             </span>
@@ -68,14 +68,14 @@ export default function OverviewPage() {
               <GrowBackIcon className="text-sprout w-4.5 h-4.5" />
             </div>
             <div>
-              <div className="text-xs text-text-dim">Routing to</div>
-              <div className="font-display text-[22px] mt-0.5">
+              <div className="text-xs text-(--mist-on-ink)">Routing to</div>
+              <div className="font-display text-(--paper) text-[22px] mt-0.5">
                 {MOCK.growBack.ticker}
               </div>
             </div>
             <div className="h-px bg-(--line)" />
             <div>
-              <div className="text-xs text-text-dim">Grown this month</div>
+              <div className="text-xs text-(--mist-on-ink)">Grown this month</div>
               <div className="font-display num text-[26px] text-sprout mt-0.5">
                 {MOCK.growBack.grownThisMonth}
               </div>

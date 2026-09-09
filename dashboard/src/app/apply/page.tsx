@@ -5,8 +5,10 @@ import { useRouter } from "next/navigation";
 import { useAccount } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { SproutLogo } from "@/components/SproutLogo";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { setFlowStage } from "@/lib/cardAccess";
 import { useToast } from "@/components/ToastProvider";
+import { primeAudio } from "@/lib/sound";
 
 // Phase 1 mock: no real charge yet — Phase 3 wires this to an actual
 // on-chain payment + server-verified session before granting access.
@@ -17,6 +19,7 @@ export default function ApplyPage() {
   const [status, setStatus] = useState<"idle" | "paying" | "done">("idle");
 
   function handlePay() {
+    primeAudio(); // must fire inside the click gesture, not the setTimeout below
     setStatus("paying");
     setTimeout(() => {
       setFlowStage("paid");
@@ -31,9 +34,12 @@ export default function ApplyPage() {
       <div className="pointer-events-none absolute -top-40 -right-30 w-140 h-140 rounded-full bg-[radial-gradient(circle,rgba(216,255,77,.10),transparent_70%)]" />
 
       <div className="w-full max-w-md bg-surface border border-(--line) rounded-lg p-8 relative z-10">
-        <div className="flex items-center gap-2 mb-8">
-          <SproutLogo size={22} className="text-sprout" />
-          <span className="font-display text-lg">sprout</span>
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-2">
+            <SproutLogo size={22} className="text-sprout" />
+            <span className="font-display text-lg">sprout</span>
+          </div>
+          <ThemeToggle />
         </div>
 
         <h1 className="font-display text-2xl tracking-tight mb-1.5">

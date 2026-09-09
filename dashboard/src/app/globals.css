@@ -1,25 +1,43 @@
 @import "tailwindcss";
 
 /*
-  Dark-theme tokens lifted 1:1 from the landing page's dark-mode values
-  (site/css/style.css — :root[data-theme="dark"] block), since the
-  dashboard is always dark, not toggle-based like the marketing site.
+  Theme tokens mirror the landing page 1:1 (site/css/style.css): light
+  values live bare on :root, dark values override under the same two
+  selectors the landing page uses — prefers-color-scheme (guarded by
+  :not([data-theme="light"])) and an explicit :root[data-theme="dark"].
+  ThemeInit (app/theme-init.tsx) reads the SAME "sprout-theme"
+  localStorage key the landing page writes — same origin via the /app
+  rewrite, so a theme choice made on either side carries over.
+
+  --color-ink/--color-ink-2 are NOT redefined per theme — like the
+  landing page's dark "showcase" panels, a few dashboard surfaces (the
+  grow-back highlight, the card visual) are deliberately always-dark
+  for contrast regardless of site theme. Anything rendered on top of
+  them must use --paper/--mist-on-ink below, not --color-text(-dim).
 */
 :root {
-  --color-bg: #0b0d09;
-  --color-surface: #14170f;
-  --color-surface-2: #1a1e13;
+  --color-bg: #f6f5ef;
+  --color-surface: #ffffff;
+  --color-surface-2: #edebe0;
   --color-ink: #0d110c;
   --color-ink-2: #171b14;
 
-  --color-text: #edede2;
-  --color-text-dim: #9a9c8e;
+  --color-text: #1c1d18;
+  --color-text-dim: #6e6e64;
 
   --color-sprout: #d8ff4d;
   --color-sprout-deep: #8fb300;
 
-  --line: rgba(255, 255, 255, 0.1);
-  --line-strong: rgba(255, 255, 255, 0.18);
+  --line: #e4e2d6;
+  --line-strong: rgba(0, 0, 0, 0.14);
+
+  /* fixed light-on-dark text/border for the always-dark panels above —
+     matches the landing page's --paper / --mist-on-ink / --line-on-ink */
+  --paper: #f6f5ef;
+  --mist-on-ink: #9a9c8e;
+  --line-on-ink: rgba(255, 255, 255, 0.1);
+
+  color-scheme: light;
 
   /* motion system — same values/character as the landing page's
      --motion- and --ease- tokens (site/css/style.css) */
@@ -31,6 +49,29 @@
   --motion-base: 460ms;
   --motion-slow: 720ms;
   --motion-stagger: 70ms;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-bg: #0b0d09;
+    --color-surface: #14170f;
+    --color-surface-2: #1a1e13;
+    --color-text: #edede2;
+    --color-text-dim: #9a9c8e;
+    --line: rgba(255, 255, 255, 0.1);
+    --line-strong: rgba(255, 255, 255, 0.18);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --color-bg: #0b0d09;
+  --color-surface: #14170f;
+  --color-surface-2: #1a1e13;
+  --color-text: #edede2;
+  --color-text-dim: #9a9c8e;
+  --line: rgba(255, 255, 255, 0.1);
+  --line-strong: rgba(255, 255, 255, 0.18);
+  color-scheme: dark;
 }
 
 @theme inline {
@@ -68,6 +109,23 @@ body {
 
 .num {
   font-variant-numeric: tabular-nums;
+}
+
+/* armed for ~1 tick around a theme switch only — see ThemeToggle */
+.theme-transition,
+.theme-transition * {
+  transition:
+    background-color var(--motion-slow) var(--ease-in-out-quart),
+    border-color var(--motion-slow) var(--ease-in-out-quart),
+    color var(--motion-slow) var(--ease-in-out-quart),
+    fill var(--motion-slow) var(--ease-in-out-quart),
+    box-shadow var(--motion-slow) var(--ease-in-out-quart) !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .theme-transition,
+  .theme-transition * {
+    transition: none !important;
+  }
 }
 
 @keyframes toast-in {
