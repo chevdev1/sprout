@@ -1,0 +1,71 @@
+@import "tailwindcss";
+
+/*
+  Dark-theme tokens lifted 1:1 from the landing page's dark-mode values
+  (site/css/style.css — :root[data-theme="dark"] block), since the
+  dashboard is always dark, not toggle-based like the marketing site.
+*/
+:root {
+  --color-bg: #0b0d09;
+  --color-surface: #14170f;
+  --color-surface-2: #1a1e13;
+  --color-ink: #0d110c;
+  --color-ink-2: #171b14;
+
+  --color-text: #edede2;
+  --color-text-dim: #9a9c8e;
+
+  --color-sprout: #d8ff4d;
+  --color-sprout-deep: #8fb300;
+
+  --line: rgba(255, 255, 255, 0.1);
+  --line-strong: rgba(255, 255, 255, 0.18);
+
+  /* motion system — same values/character as the landing page's
+     --motion- and --ease- tokens (site/css/style.css) */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
+  --ease-spring: cubic-bezier(0.32, 1.4, 0.44, 1);
+  --motion-instant: 120ms;
+  --motion-fast: 260ms;
+  --motion-base: 460ms;
+  --motion-slow: 720ms;
+  --motion-stagger: 70ms;
+}
+
+@theme inline {
+  --color-bg: var(--color-bg);
+  --color-surface: var(--color-surface);
+  --color-surface-2: var(--color-surface-2);
+  --color-ink: var(--color-ink);
+  --color-ink-2: var(--color-ink-2);
+  --color-text: var(--color-text);
+  --color-text-dim: var(--color-text-dim);
+  --color-sprout: var(--color-sprout);
+  --color-sprout-deep: var(--color-sprout-deep);
+
+  --font-display: var(--font-instrument-sans), ui-sans-serif, sans-serif;
+  --font-sans: var(--font-inter), ui-sans-serif, sans-serif;
+
+  /* radius scale matches the landing page's --radius-lg/md/sm exactly
+     (20/14/10px) — rounded-lg/md/sm map straight onto it */
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+}
+
+.font-display {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+}
