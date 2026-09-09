@@ -779,4 +779,75 @@
       });
     });
   }
+
+  /* ---------- wallet-aware header CTA ---------- */
+  // The dashboard (/app) is a separate Next.js app, but same origin
+  // (via the /app rewrite) — so it shares this page's localStorage.
+  // wagmi persists its connection under "wagmi.store"; if a wallet is
+  // already connected there, swap "Get early access" for that wallet's
+  // address so a returning, already-authorized visitor sees their own
+  // dashboard is one click away instead of a generic signup CTA.
+  //
+  // Reads wagmi's internal persisted-store shape directly (there's no
+  // public API for this from a plain script) — wrapped defensively so
+  // a future wagmi storage-format change just falls back to the
+  // default CTA instead of breaking the page.
+  (function () {
+    var navCta = document.querySelector('.nav-cta');
+    if (!navCta) return;
+
+    var defaultHTML = navCta.innerHTML;
+    var defaultLabel = navCta.getAttribute('aria-label');
+
+    function shortAddress(address) {
+      return address.slice(0, 6) + '…' + address.slice(-4);
+    }
+
+    function readConnectedAddress() {
+      try {
+        var raw = window.localStorage.getItem('wagmi.store');
+        if (!raw) return null;
+        var parsed = JSON.parse(raw);
+        var state = parsed && parsed.state;
+        if (!state || !state.current || !state.connections) return null;
+        var entries = state.connections.value || [];
+        for (var i = 0; i < entries.length; i++) {
+          if (entries[i][0] === state.current) {
+            var accounts = entries[i][1] && entries[i][1].accounts;
+            return (accounts && accounts[0]) || null;
+          }
+        }
+        return null;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function render() {
+      var address = readConnectedAddress();
+      if (address) {
+        navCta.classList.add('is-wallet');
+        navCta.innerHTML = '<span class="nav-cta-avatar"></span>' + shortAddress(address);
+        navCta.setAttribute('aria-label', 'Open your dashboard (' + address + ')');
+      } else {
+        navCta.classList.remove('is-wallet');
+        navCta.innerHTML = defaultHTML;
+        if (defaultLabel) navCta.setAttribute('aria-label', defaultLabel);
+        else navCta.removeAttribute('aria-label');
+      }
+    }
+
+    render();
+    // Same-tab reconnects/disconnects inside /app don't fire "storage"
+    // here (that only fires in OTHER tabs) — "pageshow" catches the
+    // common case of coming back to this tab via back/forward or a
+    // bfcache restore after visiting the dashboard.
+    window.addEventListener('storage', function (event) {
+      if (!event.key || event.key === 'wagmi.store') render();
+    });
+    window.addEventListener('pageshow', render);
+    document.addEventListener('visibilitychange', function () {
+      if (document.visibilityState === 'visible') render();
+    });
+  })();
 })();

@@ -237,6 +237,11 @@ ul{list-style:none;}
    shifts layout. No :hover counterpart needed here: these apply on
    every pointer type, which is fine since neither moves anything. */
 .nav-cta:active{transform:scale(.97);}
+.nav-cta.is-wallet{font-family:ui-monospace,'SF Mono',monospace;letter-spacing:.01em;}
+.nav-cta-avatar{
+  width:18px;height:18px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,var(--sprout),var(--sprout-deep));
+}
 .nav-toggle:active{transform:scale(.9);}
 
 /* Every :hover below is gated to devices that actually have a mouse.
