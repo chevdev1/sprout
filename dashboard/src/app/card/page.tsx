@@ -1,20 +1,36 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
 import { Sidebar } from "@/components/Sidebar";
 import { DashboardHeader } from "@/components/DashboardHeader";
 import { SproutLogo } from "@/components/SproutLogo";
 import { getOrIssueCard, type CardData } from "@/lib/cardAccess";
 import { useToast } from "@/components/ToastProvider";
 
+function stagger(index: number): CSSProperties {
+  return { "--stagger-index": index } as CSSProperties;
+}
+
 export default function CardPage() {
   const [card, setCard] = useState<CardData | null>(null);
+  const [frozen, setFrozen] = useState(false);
   const toast = useToast();
 
   function reveal() {
     if (card) return;
     setCard(getOrIssueCard());
     toast.push("Card revealed", "Your number, expiry and CVV are ready to use");
+  }
+
+  function toggleFreeze() {
+    setFrozen((f) => {
+      const next = !f;
+      toast.push(
+        next ? "Card frozen" : "Card unfrozen",
+        next ? "New transactions are blocked" : "Your card is active again"
+      );
+      return next;
+    });
   }
 
   return (
@@ -30,12 +46,28 @@ export default function CardPage() {
           <div className="w-full md:w-100 shrink-0 flex flex-col gap-5">
             <button
               onClick={reveal}
-              className="aspect-[1.586/1] rounded-[18px] border border-(--line-on-ink) p-6.5 flex flex-col justify-between text-left relative overflow-hidden group"
+              className={`stagger-card aspect-[1.586/1] rounded-[18px] border p-6.5 flex flex-col justify-between text-left relative overflow-hidden group transition-[border-color,box-shadow] duration-[var(--dur-hover)] ${
+                frozen
+                  ? "border-red-500/50 shadow-[inset_0_0_0_1px_rgba(239,68,68,.3),0_0_36px_-10px_rgba(239,68,68,.45)]"
+                  : "border-(--line-on-ink)"
+              }`}
               style={{
+                ...stagger(0),
                 background:
                   "linear-gradient(135deg, rgba(255,255,255,.06), rgba(255,255,255,.01) 55%), linear-gradient(135deg,#20241C 0%,#0D110C 75%)",
               }}
             >
+              <div
+                className={`pointer-events-none absolute inset-0 bg-red-500/10 transition-opacity duration-[var(--dur-hover)] ${
+                  frozen ? "opacity-100" : "opacity-0"
+                }`}
+              />
+              {frozen && (
+                <span className="reveal-in pointer-events-none absolute top-3.5 right-3.5 text-[9.5px] font-semibold tracking-[0.08em] uppercase text-red-400 border border-red-500/40 bg-red-500/10 rounded-full px-2 py-0.75">
+                  Frozen
+                </span>
+              )}
+
               <div className="flex justify-between items-start">
                 <div className="flex items-center gap-1.75">
                   <SproutLogo size={16} className="text-sprout" />
@@ -47,7 +79,7 @@ export default function CardPage() {
               </div>
 
               {card ? (
-                <div className="flex flex-col gap-1">
+                <div className="reveal-in flex flex-col gap-1">
                   <div className="num text-[#E4E4D8] text-base tracking-[2px] font-mono">
                     {card.number}
                   </div>
@@ -73,30 +105,48 @@ export default function CardPage() {
               </div>
             </button>
 
-            <div className="bg-surface border border-(--line) rounded-lg p-5 flex justify-between items-center">
+            <div
+              className="stagger-card bg-surface border border-(--line) rounded-lg p-5 flex justify-between items-center"
+              style={stagger(1)}
+            >
               <div>
                 <div className="font-display text-sm">Freeze card</div>
                 <div className="text-xs text-text-dim mt-0.5">
-                  Instantly blocks new transactions
+                  {frozen ? "New transactions are blocked" : "Instantly blocks new transactions"}
                 </div>
               </div>
-              <div className="w-11 h-6.5 rounded-full bg-(--line) relative">
-                <div className="absolute top-0.75 left-0.75 w-5 h-5 rounded-full bg-text-dim" />
-              </div>
+              <button
+                onClick={toggleFreeze}
+                role="switch"
+                aria-checked={frozen}
+                aria-label="Freeze card"
+                className={`min-w-11 w-11 h-6.5 rounded-full relative shrink-0 transition-colors duration-[var(--dur-hover)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-sprout focus-visible:outline-offset-2 ${
+                  frozen ? "bg-red-500/80" : "bg-(--line)"
+                }`}
+              >
+                <span
+                  className={`absolute top-0.75 left-0.75 w-5 h-5 rounded-full bg-white transition-transform duration-[var(--dur-hover)] ${
+                    frozen ? "translate-x-4.5" : "translate-x-0"
+                  }`}
+                />
+              </button>
             </div>
 
-            <div className="flex gap-2.5">
-              <button className="flex-1 py-3 rounded-full bg-sprout text-ink text-[13.5px] font-semibold">
+            <div className="stagger-card flex gap-2.5" style={stagger(2)}>
+              <button className="flex-1 min-h-11 py-3 rounded-full bg-sprout text-ink text-[13.5px] font-semibold hover:bg-sprout-deep active:scale-[0.97] transition-[background-color,transform] duration-[var(--dur-hover)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-sprout focus-visible:outline-offset-2">
                 Top up
               </button>
-              <button className="flex-1 py-3 rounded-full border border-(--line) text-[13.5px] text-text-dim">
+              <button className="flex-1 min-h-11 py-3 rounded-full border border-(--line) text-[13.5px] text-text-dim hover:border-sprout/40 hover:text-text active:scale-[0.97] transition-[border-color,color,transform] duration-[var(--dur-hover)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-sprout focus-visible:outline-offset-2">
                 Card details
               </button>
             </div>
           </div>
 
           <div className="flex-1 flex flex-col gap-5 min-w-0">
-            <div className="bg-surface border border-(--line) rounded-lg p-6.5">
+            <div
+              className="stagger-card bg-surface border border-(--line) rounded-lg p-6.5"
+              style={stagger(3)}
+            >
               <div className="text-xs text-text-dim uppercase tracking-wide mb-2.5">
                 Available balance
               </div>
@@ -105,7 +155,10 @@ export default function CardPage() {
               </div>
             </div>
 
-            <div className="bg-ink border border-(--line-on-ink) rounded-lg p-6.5">
+            <div
+              className="stagger-card bg-ink border border-(--line-on-ink) rounded-lg p-6.5 hover:border-sprout/30 transition-colors duration-[var(--dur-hover)]"
+              style={stagger(4)}
+            >
               <div className="flex justify-between items-start mb-5">
                 <div>
                   <span className="text-[10.5px] font-semibold text-sprout uppercase tracking-wide">
@@ -133,7 +186,10 @@ export default function CardPage() {
               </div>
             </div>
 
-            <div className="bg-surface border border-(--line) rounded-lg p-6 flex-1">
+            <div
+              className="stagger-card bg-surface border border-(--line) rounded-lg p-6 flex-1"
+              style={stagger(5)}
+            >
               <div className="text-xs text-text-dim uppercase tracking-wide mb-3.5">
                 Recent on this card
               </div>

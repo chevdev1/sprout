@@ -342,6 +342,7 @@ ul{list-style:none;}
 .btn-ghost:hover{border-color:var(--bark);}
 .btn-ghost.on-ink{color:var(--paper);border-color:var(--line-on-ink);}
 .btn-ghost.on-ink:hover{border-color:var(--mist-on-ink);}
+.btn:active{transform:scale(.97);}
 .btn-lg{padding:17px 32px;font-size:16px;}
 
 /* ---------- hero ---------- */

@@ -194,10 +194,13 @@ body {
   }
 }
 
-/* Overview card entrance — opacity + translateY(12px), 260ms, ease-out,
-   staggered 50ms/card up to 6 cards (sprout-dashboard-refactor-prompt.md).
-   Data-only re-renders never replay this — it's applied once via a key
-   change on first paint, not tied to prop updates. */
+/* Section entrance — opacity + translateY(12px), 260ms, ease-out,
+   staggered 50ms/section up to 6 (sprout-dashboard-refactor-prompt.md).
+   Used on every dashboard screen (Overview, Card) so switching sidebar
+   sections replays it on mount — a page-level component always
+   re-mounts on route change, so this needs no extra transition
+   plumbing. Data-only re-renders never replay it — it's applied once
+   on first paint, not tied to prop updates. */
 .stagger-card {
   animation: fade-up var(--dur-enter) var(--ease-out) backwards;
   animation-delay: calc(var(--stagger-index, 0) * 50ms);
@@ -207,6 +210,28 @@ body {
     animation: none;
     opacity: 1;
     transform: none;
+  }
+}
+
+/* Card-number reveal — a quick scale+fade-in distinct from the
+   directional fade-up above, since this is content unhiding in place,
+   not a section arriving on screen. */
+@keyframes reveal-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+.reveal-in {
+  animation: reveal-in var(--dur-enter) var(--ease-out);
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal-in {
+    animation: none;
   }
 }
 
