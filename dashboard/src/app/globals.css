@@ -115,6 +115,19 @@
   --radius-lg: 20px;
 }
 
+:root {
+  /* Overview refactor motion tokens (sprout-dashboard-refactor-prompt.md,
+     section 4) — deliberately separate from the --ease-out-expo/--motion-*
+     tokens above, which stay as-is for the pages that already use them
+     (apply/welcome/onboarding/card). ease-in is never used on UI. */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --dur-press: 120ms;
+  --dur-hover: 160ms;
+  --dur-enter: 260ms;
+  --dur-modal: 240ms;
+}
+
 body {
   background: var(--color-bg);
   color: var(--color-text);
@@ -173,10 +186,67 @@ body {
 @keyframes fade-up {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(12px);
   }
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* Overview card entrance — opacity + translateY(12px), 260ms, ease-out,
+   staggered 50ms/card up to 6 cards (sprout-dashboard-refactor-prompt.md).
+   Data-only re-renders never replay this — it's applied once via a key
+   change on first paint, not tied to prop updates. */
+.stagger-card {
+  animation: fade-up var(--dur-enter) var(--ease-out) backwards;
+  animation-delay: calc(var(--stagger-index, 0) * 50ms);
+}
+@media (prefers-reduced-motion: reduce) {
+  .stagger-card {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--color-surface-2) 25%,
+    var(--line-strong) 37%,
+    var(--color-surface-2) 63%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+  border-radius: var(--radius-sm);
+}
+@keyframes shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+  }
+}
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  [class*="pulse-dot"] {
+    animation: none;
+    opacity: 1;
   }
 }
