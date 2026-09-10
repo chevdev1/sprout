@@ -1,33 +1,91 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useAccount } from "wagmi";
+import {
+  useAccount,
+  useSendTransaction,
+  useSwitchChain,
+  useWaitForTransactionReceipt,
+} from "wagmi";
+import { parseEther } from "viem";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { SproutLogo } from "@/components/SproutLogo";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { setFlowStage } from "@/lib/cardAccess";
 import { useToast } from "@/components/ToastProvider";
 import { primeAudio } from "@/lib/sound";
+import { robinhoodChainTestnet } from "@/lib/wagmi";
+import { ISSUANCE_FEE_ETH, TREASURY_ADDRESS, isPaymentConfigured } from "@/lib/payments";
 
-// Phase 1 mock: no real charge yet — Phase 3 wires this to an actual
-// on-chain payment + server-verified session before granting access.
+// Real on-chain payment: a small amount of test ETH, transferred on
+// Robinhood Chain Testnet to TREASURY_ADDRESS. Charging in ETH (not
+// USDG) for now — see src/lib/payments.ts for why. Switch to the
+// ERC-20 USDG path there once a real testnet token is confirmed.
 export default function ApplyPage() {
   const router = useRouter();
-  const { isConnected } = useAccount();
   const toast = useToast();
-  const [status, setStatus] = useState<"idle" | "paying" | "done">("idle");
+  const { isConnected, chain } = useAccount();
+  const { switchChainAsync, isPending: isSwitching } = useSwitchChain();
+  const configured = isPaymentConfigured();
+  const wrongNetwork = isConnected && chain?.id !== robinhoodChainTestnet.id;
 
-  function handlePay() {
-    primeAudio(); // must fire inside the click gesture, not the setTimeout below
-    setStatus("paying");
-    setTimeout(() => {
-      setFlowStage("paid");
-      setStatus("done");
-      toast.push("Payment confirmed", "$5.00 received — setting up your card");
-      router.replace("/welcome");
-    }, 1400);
+  const {
+    sendTransaction,
+    data: hash,
+    isPending: isSending,
+    error: sendError,
+  } = useSendTransaction();
+  const {
+    isLoading: isConfirming,
+    isSuccess: isConfirmed,
+    error: receiptError,
+  } = useWaitForTransactionReceipt({ hash });
+
+  useEffect(() => {
+    if (!isConfirmed) return;
+    setFlowStage("paid");
+    toast.push("Payment confirmed", `${ISSUANCE_FEE_ETH} ETH received — setting up your card`);
+    router.replace("/welcome");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isConfirmed]);
+
+  useEffect(() => {
+    const err = sendError ?? receiptError;
+    if (!err) return;
+    toast.push("Payment failed", err.message.split("\n")[0]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sendError, receiptError]);
+
+  async function handlePay() {
+    primeAudio(); // must fire inside the click gesture, not later awaits
+    if (!configured || !TREASURY_ADDRESS) return;
+
+    if (wrongNetwork) {
+      try {
+        await switchChainAsync({ chainId: robinhoodChainTestnet.id });
+      } catch {
+        return; // user rejected the network switch
+      }
+    }
+
+    sendTransaction({
+      to: TREASURY_ADDRESS,
+      value: parseEther(ISSUANCE_FEE_ETH),
+      chainId: robinhoodChainTestnet.id,
+    });
   }
+
+  const busy = isSwitching || isSending || isConfirming;
+  const payLabel = !configured
+    ? "Payment not configured yet"
+    : isSwitching
+      ? "Switching to Robinhood Chain…"
+      : isSending
+        ? "Confirm in wallet…"
+        : isConfirming
+          ? "Confirming on-chain…"
+          : `Pay ${ISSUANCE_FEE_ETH} ETH & get card`;
 
   return (
     <div className="min-h-dvh flex items-center justify-center relative overflow-hidden bg-bg p-6">
@@ -52,12 +110,12 @@ export default function ApplyPage() {
 
         <div className="flex flex-col gap-3 mb-7">
           <div className="flex items-center justify-between px-4 py-3.5 rounded-md bg-surface-2 border border-(--line)">
-            <span className="text-sm text-text-dim">Issuance fee</span>
-            <span className="font-display num text-base">$5.00</span>
+            <span className="text-sm text-text-dim">Issuance fee (testnet)</span>
+            <span className="font-display num text-base">{ISSUANCE_FEE_ETH} ETH</span>
           </div>
           <div className="flex items-center justify-between px-4 py-3.5 rounded-md bg-surface-2 border border-(--line)">
-            <span className="text-sm text-text-dim">Issuing country</span>
-            <span className="text-sm font-medium">Europe (any)</span>
+            <span className="text-sm text-text-dim">Network</span>
+            <span className="text-sm font-medium">Robinhood Chain (testnet)</span>
           </div>
           <div className="flex items-center justify-between px-4 py-3.5 rounded-md bg-surface-2 border border-(--line)">
             <span className="text-sm text-text-dim">Card type</span>
@@ -70,22 +128,35 @@ export default function ApplyPage() {
             1. Connect wallet
           </div>
           <ConnectButton.Custom>
-            {({ account, openConnectModal, mounted }) => {
+            {({ account, chain: rkChain, openConnectModal, openChainModal, mounted }) => {
               const ready = mounted;
-              const connected = ready && account;
+              const connected = ready && account && rkChain;
               if (!ready) return null;
-              return connected ? (
+              if (!connected) {
+                return (
+                  <button
+                    onClick={openConnectModal}
+                    className="w-full min-h-11 px-4 py-3 rounded-full border border-(--line) text-sm font-medium hover:border-sprout/40 active:scale-[0.97] transition-[border-color,transform] duration-[var(--dur-hover)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-sprout focus-visible:outline-offset-2"
+                  >
+                    Connect wallet
+                  </button>
+                );
+              }
+              if (rkChain.unsupported) {
+                return (
+                  <button
+                    onClick={openChainModal}
+                    className="w-full min-h-11 px-4 py-3 rounded-full border border-red-500/40 text-red-500 text-sm font-medium hover:border-red-500/70 active:scale-[0.97] transition-[border-color,transform] duration-[var(--dur-hover)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-sprout focus-visible:outline-offset-2"
+                  >
+                    Wrong network — switch to Robinhood Chain
+                  </button>
+                );
+              }
+              return (
                 <div className="flex items-center gap-2 px-4 py-3 rounded-full border border-(--line) bg-surface-2 text-sm">
                   <span className="w-5 h-5 rounded-full bg-gradient-to-br from-sprout to-sprout-deep" />
                   {account.displayName}
                 </div>
-              ) : (
-                <button
-                  onClick={openConnectModal}
-                  className="w-full px-4 py-3 rounded-full border border-(--line) text-sm font-medium hover:border-sprout/40 transition-colors duration-[var(--motion-fast)]"
-                >
-                  Connect wallet
-                </button>
               );
             }}
           </ConnectButton.Custom>
@@ -97,15 +168,17 @@ export default function ApplyPage() {
           </div>
           <button
             onClick={handlePay}
-            disabled={!isConnected || status !== "idle"}
-            className="w-full px-4 py-3.5 rounded-full bg-(--fill-sprout) text-ink text-sm font-semibold disabled:opacity-40 disabled:cursor-not-allowed transition-opacity duration-[var(--motion-fast)]"
+            disabled={!isConnected || busy || !configured}
+            className="w-full min-h-11 px-4 py-3.5 rounded-full bg-(--fill-sprout) text-ink text-sm font-semibold disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.97] transition-[opacity,transform] duration-[var(--dur-hover)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-sprout focus-visible:outline-offset-2"
           >
-            {status === "paying" ? "Processing payment…" : "Pay $5 & get card"}
+            {payLabel}
           </button>
         </div>
 
         <p className="text-xs text-text-dim mt-6 leading-relaxed">
-          Concept preview only. No real funds are charged in this build.
+          {configured
+            ? "Testnet payment — Robinhood Chain Testnet, test ETH, no real funds at risk."
+            : "Payment isn't wired up yet — a treasury address still needs to be set (NEXT_PUBLIC_TREASURY_ADDRESS)."}
         </p>
       </div>
     </div>

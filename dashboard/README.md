@@ -24,11 +24,13 @@ wagmi v2 + viem + RainbowKit for wallet connection.
   Mainnet (`robinhoodChain`, chain ID 4663) is defined but unused until
   the testnet payment flow is confirmed working end-to-end.
 - **Card-issuance payment is real but unconfigured.** `/apply`
-  transfers USDG on Robinhood Chain Testnet via wagmi (see
-  `src/lib/payments.ts`) — it needs `NEXT_PUBLIC_TREASURY_ADDRESS` and
-  `NEXT_PUBLIC_USDG_ADDRESS` set (`.env.example`) or the pay button
-  stays disabled with an explicit "not configured" state. No mock
-  fallback — if these aren't set, nothing pretends to charge anyone.
+  transfers a small amount of test ETH on Robinhood Chain Testnet via
+  wagmi (see `src/lib/payments.ts`) — needs `NEXT_PUBLIC_TREASURY_ADDRESS`
+  set (`.env.example`) or the pay button stays disabled with an
+  explicit "not configured" state. No mock fallback. Charging in ETH
+  rather than USDG for now — there's no official USDG contract on
+  Robinhood Chain Testnet to verify against; see the comment in
+  `payments.ts` before switching to the ERC-20 path.
 - **No WalletConnect project ID set.** Copy `.env.example` to `.env.local`
   and fill in `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` (free at
   [cloud.reown.com](https://cloud.reown.com)) — MetaMask/injected/Safe
@@ -39,8 +41,8 @@ wagmi v2 + viem + RainbowKit for wallet connection.
   that dynamically imports uninstalled `@x402/*` packages and breaks
   the Turbopack build. See the comments in `next.config.ts` and
   `src/lib/wagmi.ts` before re-adding it.
-- Sidebar links to `/card`, `/grow-back`, `/activity`, `/settings` —
-  none of those routes exist yet (Phase 3).
+- Sidebar links to `/grow-back` and `/activity` — those two routes
+  don't exist yet (Phase 3). `/card` and `/settings` are built.
 
 ## Getting started
 
