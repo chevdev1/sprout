@@ -4,38 +4,48 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   useAccount,
-  useSendTransaction,
+  useReadContract,
   useSwitchChain,
   useWaitForTransactionReceipt,
+  useWriteContract,
 } from "wagmi";
-import { parseEther } from "viem";
+import { parseUnits } from "viem";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { SproutLogo } from "@/components/SproutLogo";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { setFlowStage } from "@/lib/cardAccess";
 import { useToast } from "@/components/ToastProvider";
 import { primeAudio } from "@/lib/sound";
-import { robinhoodChainTestnet } from "@/lib/wagmi";
-import { ISSUANCE_FEE_ETH, TREASURY_ADDRESS, isPaymentConfigured } from "@/lib/payments";
+import { robinhoodChain } from "@/lib/wagmi";
+import {
+  erc20Abi,
+  ISSUANCE_FEE_USDG,
+  TREASURY_ADDRESS,
+  USDG_ADDRESS,
+  isPaymentConfigured,
+} from "@/lib/payments";
 
-// Real on-chain payment: a small amount of test ETH, transferred on
-// Robinhood Chain Testnet to TREASURY_ADDRESS. Charging in ETH (not
-// USDG) for now — see src/lib/payments.ts for why. Switch to the
-// ERC-20 USDG path there once a real testnet token is confirmed.
+// Real on-chain payment: $5 in USDG, transferred on Robinhood Chain
+// (mainnet) to TREASURY_ADDRESS. This moves real money — see
+// sprout-dashboard-concept.md 3.4.C and src/lib/payments.ts for the
+// addresses involved and how USDG_ADDRESS was verified.
 export default function ApplyPage() {
   const router = useRouter();
   const toast = useToast();
   const { isConnected, chain } = useAccount();
   const { switchChainAsync, isPending: isSwitching } = useSwitchChain();
   const configured = isPaymentConfigured();
-  const wrongNetwork = isConnected && chain?.id !== robinhoodChainTestnet.id;
+  const wrongNetwork = isConnected && chain?.id !== robinhoodChain.id;
 
-  const {
-    sendTransaction,
-    data: hash,
-    isPending: isSending,
-    error: sendError,
-  } = useSendTransaction();
+  const { data: decimals } = useReadContract({
+    address: USDG_ADDRESS,
+    abi: erc20Abi,
+    functionName: "decimals",
+    chainId: robinhoodChain.id,
+    query: { enabled: configured },
+  });
+
+  const { writeContract, data: hash, isPending: isSending, error: writeError } = useWriteContract();
   const {
     isLoading: isConfirming,
     isSuccess: isConfirmed,
@@ -45,34 +55,36 @@ export default function ApplyPage() {
   useEffect(() => {
     if (!isConfirmed) return;
     setFlowStage("paid");
-    toast.push("Payment confirmed", `${ISSUANCE_FEE_ETH} ETH received — setting up your card`);
+    toast.push("Payment confirmed", `${ISSUANCE_FEE_USDG} USDG received — setting up your card`);
     router.replace("/welcome");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isConfirmed]);
 
   useEffect(() => {
-    const err = sendError ?? receiptError;
+    const err = writeError ?? receiptError;
     if (!err) return;
     toast.push("Payment failed", err.message.split("\n")[0]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sendError, receiptError]);
+  }, [writeError, receiptError]);
 
   async function handlePay() {
     primeAudio(); // must fire inside the click gesture, not later awaits
-    if (!configured || !TREASURY_ADDRESS) return;
+    if (!configured || decimals === undefined || !USDG_ADDRESS || !TREASURY_ADDRESS) return;
 
     if (wrongNetwork) {
       try {
-        await switchChainAsync({ chainId: robinhoodChainTestnet.id });
+        await switchChainAsync({ chainId: robinhoodChain.id });
       } catch {
         return; // user rejected the network switch
       }
     }
 
-    sendTransaction({
-      to: TREASURY_ADDRESS,
-      value: parseEther(ISSUANCE_FEE_ETH),
-      chainId: robinhoodChainTestnet.id,
+    writeContract({
+      address: USDG_ADDRESS,
+      abi: erc20Abi,
+      functionName: "transfer",
+      args: [TREASURY_ADDRESS, parseUnits(ISSUANCE_FEE_USDG, decimals)],
+      chainId: robinhoodChain.id,
     });
   }
 
@@ -85,7 +97,7 @@ export default function ApplyPage() {
         ? "Confirm in wallet…"
         : isConfirming
           ? "Confirming on-chain…"
-          : `Pay ${ISSUANCE_FEE_ETH} ETH & get card`;
+          : `Pay ${ISSUANCE_FEE_USDG} USDG & get card`;
 
   return (
     <div className="min-h-dvh flex items-center justify-center relative overflow-hidden bg-bg p-6">
@@ -110,12 +122,12 @@ export default function ApplyPage() {
 
         <div className="flex flex-col gap-3 mb-7">
           <div className="flex items-center justify-between px-4 py-3.5 rounded-md bg-surface-2 border border-(--line)">
-            <span className="text-sm text-text-dim">Issuance fee (testnet)</span>
-            <span className="font-display num text-base">{ISSUANCE_FEE_ETH} ETH</span>
+            <span className="text-sm text-text-dim">Issuance fee</span>
+            <span className="font-display num text-base">{ISSUANCE_FEE_USDG} USDG</span>
           </div>
           <div className="flex items-center justify-between px-4 py-3.5 rounded-md bg-surface-2 border border-(--line)">
             <span className="text-sm text-text-dim">Network</span>
-            <span className="text-sm font-medium">Robinhood Chain (testnet)</span>
+            <span className="text-sm font-medium">Robinhood Chain</span>
           </div>
           <div className="flex items-center justify-between px-4 py-3.5 rounded-md bg-surface-2 border border-(--line)">
             <span className="text-sm text-text-dim">Card type</span>
@@ -177,8 +189,8 @@ export default function ApplyPage() {
 
         <p className="text-xs text-text-dim mt-6 leading-relaxed">
           {configured
-            ? "Testnet payment — Robinhood Chain Testnet, test ETH, no real funds at risk."
-            : "Payment isn't wired up yet — a treasury address still needs to be set (NEXT_PUBLIC_TREASURY_ADDRESS)."}
+            ? "Real payment on Robinhood Chain mainnet — this moves actual funds."
+            : "Payment isn't wired up yet — treasury address and USDG contract still need to be set (NEXT_PUBLIC_TREASURY_ADDRESS / NEXT_PUBLIC_USDG_ADDRESS)."}
         </p>
       </div>
     </div>

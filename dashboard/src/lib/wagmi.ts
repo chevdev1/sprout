@@ -41,11 +41,11 @@ export const robinhoodChain = defineChain({
   },
 });
 
-// Testnet-only for now — real payment flow (see src/lib/payments.ts) is
-// being built and tested against Robinhood Chain Testnet before any
-// mainnet money moves. Swap to [robinhoodChain] (and update the
-// transport below) when that's confirmed working end-to-end.
-const chains = [robinhoodChainTestnet] as const;
+// Mainnet — real USDG payment (src/lib/payments.ts, src/app/apply/page.tsx)
+// is live here. Testnet stays available too (some existing dev/test
+// flows still reference it) but mainnet is what the app defaults to
+// and what card-issuance payment targets now.
+const chains = [robinhoodChain, robinhoodChainTestnet] as const;
 
 const projectId =
   process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID ??
@@ -73,6 +73,7 @@ export const wagmiConfig = createConfig({
   connectors,
   ssr: true,
   transports: {
+    [robinhoodChain.id]: http(),
     [robinhoodChainTestnet.id]: http(),
   },
 });
