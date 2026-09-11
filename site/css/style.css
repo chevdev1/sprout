@@ -1367,16 +1367,26 @@ input[type="range"]::-moz-range-thumb{
    paper-dim background bookends the head row at the top. */
 .fees-order{
   display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;
-  gap:10px 16px;padding:18px 28px;
+  gap:10px 16px;padding:18px 24px 18px 28px;
   border-top:1px solid var(--line);background:var(--paper-dim);
+  transition:background var(--motion-fast) var(--ease-in-out-quart);
 }
-.fees-order p{font-size:13.5px;color:var(--mist);}
-.fees-order a{
-  font-size:13.5px;font-weight:600;color:var(--sprout-deep);
-  transition:color var(--motion-fast) var(--ease-in-out-quart);
+.fees-order-lead{font-size:13.5px;color:var(--mist);}
+.fees-order-cta{
+  display:inline-flex;align-items:center;gap:10px;
+  font-size:14px;font-weight:600;color:var(--bark);
 }
+.fees-order-arrow{
+  display:grid;place-items:center;flex-shrink:0;
+  width:30px;height:30px;border-radius:50%;
+  background:var(--sprout);color:var(--ink);
+  transition:transform var(--motion-fast) var(--ease-spring);
+}
+.fees-order-arrow svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.2;}
+.fees-order:active{transform:scale(.99);}
 @media (hover:hover) and (pointer:fine){
-  .fees-order a:hover{color:var(--bark);text-decoration:underline;}
+  .fees-order:hover{background:var(--bg);}
+  .fees-order:hover .fees-order-arrow{transform:translateX(4px);}
 }
 @media (max-width:560px){
   .fees-order{padding:14px 16px;}
