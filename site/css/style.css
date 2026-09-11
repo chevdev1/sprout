@@ -1361,6 +1361,27 @@ input[type="range"]::-moz-range-thumb{
   .fees-table-detailed .fees-row .value{grid-area:value;text-align:left;margin-top:2px;}
 }
 
+/* quiet footer strip on the fee table — not another fee line, just a
+   low-key nudge once someone's read the whole table. Same rounded
+   container (border-radius comes from .fees-table's overflow:hidden),
+   paper-dim background bookends the head row at the top. */
+.fees-order{
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;
+  gap:10px 16px;padding:18px 28px;
+  border-top:1px solid var(--line);background:var(--paper-dim);
+}
+.fees-order p{font-size:13.5px;color:var(--mist);}
+.fees-order a{
+  font-size:13.5px;font-weight:600;color:var(--sprout-deep);
+  transition:color var(--motion-fast) var(--ease-in-out-quart);
+}
+@media (hover:hover) and (pointer:fine){
+  .fees-order a:hover{color:var(--bark);text-decoration:underline;}
+}
+@media (max-width:560px){
+  .fees-order{padding:14px 16px;}
+}
+
 /* ---------- faq ---------- */
 .faq-list{border-top:1px solid var(--line);}
 .faq-item{border-bottom:1px solid var(--line);}
