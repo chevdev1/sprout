@@ -1,18 +1,13 @@
 import Link from "next/link";
 import { SproutLogo } from "./SproutLogo";
-import {
-  GridIcon,
-  CardIcon,
-  GrowBackIcon,
-  ActivityIcon,
-  SettingsIcon,
-} from "./NavIcons";
+import { GridIcon, CardIcon, SettingsIcon } from "./NavIcons";
 
+// Grow-back and Activity are on the roadmap (sprout-dashboard-concept.md
+// section 3.2) but have no page yet — left out of nav rather than
+// linking to a 404. Add them back here once those routes exist.
 const NAV_ITEMS = [
   { href: "/", label: "Overview", icon: GridIcon },
   { href: "/card", label: "Card", icon: CardIcon },
-  { href: "/grow-back", label: "Grow-back", icon: GrowBackIcon },
-  { href: "/activity", label: "Activity", icon: ActivityIcon },
   { href: "/settings", label: "Settings", icon: SettingsIcon },
 ] as const;
 
@@ -52,10 +47,11 @@ export function Sidebar({ active }: { active: (typeof NAV_ITEMS)[number]["label"
         </nav>
 
         <div className="mt-auto p-4 rounded-md bg-surface-2 border border-(--line)">
-          <div className="text-xs text-text-dim leading-relaxed mb-2.5">
-            Want a physical card?
-          </div>
-          <div className="text-sm font-medium text-sprout">Order one — at cost →</div>
+          <div className="text-xs font-medium mb-1.5">Physical card</div>
+          <p className="text-xs text-text-dim leading-relaxed">
+            Ships after your virtual card is active — priced at cost,
+            shown before you order.
+          </p>
         </div>
       </div>
 
